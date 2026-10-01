@@ -1,0 +1,39 @@
+/* index.css — global dark-mode resets */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #0a0a0e;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Remove CRA default styles that conflict with dark mode */
+#root {
+  min-height: 100vh;
+}
+
+/* Bootstrap dark-mode overrides */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+}
+
+/* Scrollbar — global */
+::-webkit-scrollbar       { width: 8px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* Focus outline — accessibility */
+:focus-visible {
+  outline: 2px solid #f5f500;
+  outline-offset: 3px;
+}

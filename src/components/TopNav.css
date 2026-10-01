@@ -1,0 +1,72 @@
+/* TopNav.css */
+
+.topnav {
+  background: rgba(10, 10, 14, 0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #2a2a3d;
+  z-index: 1000;
+  padding: 0.6rem 1rem;
+}
+
+.topnav__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.brand-icon {
+  font-size: 1.6rem;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f0f0f0;
+  letter-spacing: 0.03em;
+}
+
+.brand-accent {
+  color: #f5f500;
+}
+
+.topnav__ticker {
+  font-size: 0.8rem;
+  color: #f5f500;
+  animation: ticker-pulse 2s ease-in-out infinite;
+  flex: 1;
+  text-align: center;
+}
+
+@keyframes ticker-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.topnav__cart-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  border-radius: 24px;
+  padding: 6px 18px;
+  position: relative;
+  font-size: 1rem;
+}
+
+.cart-badge {
+  font-size: 0.65rem;
+  padding: 3px 6px;
+  border-radius: 50%;
+  border: 1px solid #f5f500;
+}
+
+.free-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #00ffcc;
+  background: rgba(0, 255, 204, 0.1);
+  border: 1px solid #00ffcc;
+  border-radius: 12px;
+  padding: 1px 7px;
+}
