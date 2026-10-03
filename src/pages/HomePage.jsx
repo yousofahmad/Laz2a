@@ -58,21 +58,9 @@ function HomePage() {
             />
           </div>
 
-          <p className="hero-subtitle text-metallic fw-bold" style={{ fontSize: '1.3rem' }}>
+          <p className="hero-subtitle text-metallic fw-bold" style={{ fontSize: '1.3rem', marginBottom: '0' }}>
             استيكرات بريميوم بأفضل الأسعار وأعلى جودة
           </p>
-
-          {/* WhatsApp CTA */}
-          <a
-            href={WHATSAPP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-metallic-gold"
-            style={{ padding: '12px 32px', fontSize: '1.2rem', marginTop: '1rem' }}
-          >
-            <FaWhatsapp style={{ marginLeft: '8px', fontSize: '1.4rem' }} />
-            Custom
-          </a>
         </Container>
       </div>
 
