@@ -1,146 +1,138 @@
 import React from 'react';
-import { Modal, Button, Table, Form } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { FaShoppingCart, FaTrash, FaTimes } from 'react-icons/fa';
 import { useCart } from '../CartContext';
-import { promoLabel } from '../utils/promotions';
-import './CartModal.css';
 
-/**
- * CartModal — full cart overview with quantity controls and promo summary.
- * Props:
- *   show: boolean
- *   onHide: () => void
- */
-export default function CartModal({ show, onHide }) {
-  const { items, paidQty, freeQty, totalQty, totalPrice, activeTier, setQuantity, removeItem } =
-    useCart();
+function CartModal({ show, onHide }) {
+  const {
+    cart, totalQuantity,
+    subtotal, discountAmount, finalTotal, freeItems, itemsToNextTier,
+    updateQuantity, removeFromCart,
+  } = useCart();
   const navigate = useNavigate();
 
-  const handleCheckout = () => {
+  function handleCheckout() {
     onHide();
     navigate('/checkout');
-  };
+  }
 
   return (
-    <Modal
-      show={show}
-      onHide={onHide}
-      size="lg"
-      centered
-      contentClassName="cart-modal-content"
-    >
+    <Modal show={show} onHide={onHide} size="lg" centered contentClassName="cart-modal-content border-metallic">
       <Modal.Header closeButton closeVariant="white" className="cart-modal-header">
-        <Modal.Title>🛒 Your Cart</Modal.Title>
+        <Modal.Title style={{ color: 'var(--color-gold)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <FaShoppingCart /> سلة المشتريات
+        </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body className="cart-modal-body">
-        {items.length === 0 ? (
-          <div className="cart-empty">
-            <span className="cart-empty__icon">😶</span>
-            <p>Your cart is empty. Go pick some stickers!</p>
-          </div>
-        ) : (
-          <>
-            {/* Promo Banner */}
-            {activeTier && (
-              <div className="promo-banner">
-                {promoLabel(activeTier)}
+      <Modal.Body style={{ padding: '1.25rem 1.5rem' }}>
+        {/* Empty state */}
+        {cart.length === 0 && (
+          <p className="cart-empty-msg">السلة فارغة. اختار استيكراتك!</p>
+        )}
+
+        {/* Items list */}
+        {cart.map(function (item) {
+          return (
+            <div key={item.product.id} className="cart-item-row">
+              {/* Image */}
+              <img
+                src={'/stickers/' + item.product.relative_path}
+                alt={item.product.title}
+                className="cart-item-img"
+                onError={function (e) { e.target.style.display = 'none'; }}
+              />
+
+              {/* Name + ID */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="cart-item-name">{item.product.title}</div>
+                <div className="cart-item-id">#{item.product.id}</div>
+              </div>
+
+              {/* Quantity controls */}
+              <div className="qty-controls">
+                <button
+                  className="qty-btn"
+                  onClick={function () { updateQuantity(item.product.id, item.quantity - 1); }}
+                >
+                  −
+                </button>
+                <span className="qty-value">{item.quantity}</span>
+                <button
+                  className="qty-btn"
+                  onClick={function () { updateQuantity(item.product.id, item.quantity + 1); }}
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Item subtotal */}
+              <div className="cart-item-subtotal">{item.quantity * 10} ج</div>
+
+              {/* Remove */}
+              <button
+                className="btn-remove"
+                onClick={function () { removeFromCart(item.product.id); }}
+                title="حذف"
+              >
+                <FaTimes />
+              </button>
+            </div>
+          );
+        })}
+
+        {/* Pricing summary */}
+        {cart.length > 0 && (
+          <div className="cart-summary">
+            {/* Next tier nudge */}
+            {itemsToNextTier !== null && (
+              <p className="cart-nudge">
+                أضف {itemsToNextTier} استيكر{itemsToNextTier === 1 ? '' : 'ات'} أكتر وهتوفر أكتر!
+              </p>
+            )}
+
+            {/* Subtotal row */}
+            <div className="cart-summary-row">
+              <span>المجموع الأصلي ({totalQuantity} استيكر)</span>
+              <span>{subtotal} ج</span>
+            </div>
+
+            {/* Discount row — shown only when active */}
+            {discountAmount > 0 && (
+              <div className="cart-summary-row cart-discount-row">
+                <span>خصم ({freeItems} مجاناً)</span>
+                <span>− {discountAmount} ج</span>
               </div>
             )}
 
-            {/* Items Table */}
-            <Table responsive borderless className="cart-table">
-              <thead>
-                <tr>
-                  <th>Sticker</th>
-                  <th className="text-center">Qty</th>
-                  <th className="text-end">Subtotal</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      <div className="cart-item">
-                        <img src={item.image} alt={item.name} className="cart-item__img" />
-                        <span className="cart-item__name">{item.name}</span>
-                      </div>
-                    </td>
-                    <td className="text-center align-middle">
-                      <div className="qty-controls">
-                        <button
-                          className="qty-btn"
-                          onClick={() => setQuantity(item.id, item.quantity - 1)}
-                        >
-                          −
-                        </button>
-                        <Form.Control
-                          type="number"
-                          min={1}
-                          value={item.quantity}
-                          onChange={(e) =>
-                            setQuantity(item.id, parseInt(e.target.value, 10) || 1)
-                          }
-                          className="qty-input"
-                        />
-                        <button
-                          className="qty-btn"
-                          onClick={() => setQuantity(item.id, item.quantity + 1)}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </td>
-                    <td className="text-end align-middle text-warning fw-bold">
-                      {item.quantity * 10} EGP
-                    </td>
-                    <td className="align-middle">
-                      <button className="remove-btn" onClick={() => removeItem(item.id)}>
-                        ✕
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-
-            {/* Summary */}
-            <div className="cart-summary">
-              <div className="summary-row">
-                <span>Stickers you pay for</span>
-                <span>{paidQty}</span>
-              </div>
-              {freeQty > 0 && (
-                <div className="summary-row free-row">
-                  <span>🎁 Free stickers earned</span>
-                  <span>+{freeQty}</span>
-                </div>
-              )}
-              <div className="summary-row total-row">
-                <span>Total stickers received</span>
-                <span className="text-warning">{totalQty}</span>
-              </div>
-              <div className="summary-divider" />
-              <div className="summary-row price-row">
-                <span>Amount due</span>
-                <span className="price-tag">{totalPrice} EGP</span>
-              </div>
+            {/* Final total */}
+            <div className="cart-summary-row cart-total-row">
+              <span className="cart-total-label">الإجمالي</span>
+              <span className="cart-total-price">{finalTotal} جنيه</span>
             </div>
-          </>
+
+            {/* Free stickers alert */}
+            {freeItems > 0 && (
+              <div className="free-stickers-alert">
+                <strong>{freeItems} استيكر مجاناً</strong> — اكتب IDs الاستيكرات المجانية في ملاحظات الطلب.
+              </div>
+            )}
+          </div>
         )}
       </Modal.Body>
 
-      {items.length > 0 && (
+      {cart.length > 0 && (
         <Modal.Footer className="cart-modal-footer">
-          <Button variant="outline-secondary" onClick={onHide}>
-            Continue Shopping
+          <Button className="btn btn-metallic-gold" onClick={onHide}>
+            كمّل تسوق
           </Button>
-          <Button variant="warning" className="checkout-btn" onClick={handleCheckout}>
-            Proceed to Checkout →
+          <Button className="btn btn-metallic-gold" onClick={handleCheckout}>
+            إتمام الطلب
           </Button>
         </Modal.Footer>
       )}
     </Modal>
   );
 }
+
+export default CartModal;

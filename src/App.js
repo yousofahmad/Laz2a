@@ -1,30 +1,50 @@
 import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { CartProvider } from './CartContext';
 import TopNav       from './components/TopNav';
 import CartModal    from './components/CartModal';
 import HomePage     from './pages/HomePage';
+import ProductPage  from './pages/ProductPage';
 import CheckoutPage from './pages/CheckoutPage';
-import SuccessPage  from './pages/SuccessPage';
+import AdminPage    from './pages/AdminPage';
 
-export default function App() {
-  const [cartOpen, setCartOpen] = useState(false);
+function App() {
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [cartOpen, setCartOpen]     = useState(false);
+
+  function handleToggleTheme() {
+    const newIsDark = !isDarkMode;
+    setIsDarkMode(newIsDark);
+    if (newIsDark) {
+      document.body.classList.remove('light-mode');
+    } else {
+      document.body.classList.add('light-mode');
+    }
+  }
 
   return (
     <CartProvider>
-      {/* Sticky navbar */}
-      <TopNav onCartOpen={() => setCartOpen(true)} />
+      <TopNav
+        isDarkMode={isDarkMode}
+        onToggleTheme={handleToggleTheme}
+        onOpenCart={function () { setCartOpen(true); }}
+      />
 
-      {/* Cart slide-over modal */}
-      <CartModal show={cartOpen} onHide={() => setCartOpen(false)} />
+      <CartModal
+        show={cartOpen}
+        onHide={function () { setCartOpen(false); }}
+      />
 
-      {/* Pages */}
       <Routes>
-        <Route path="/"         element={<HomePage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/success"  element={<SuccessPage />} />
+        <Route path="/"            element={<HomePage />} />
+        <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/checkout"    element={<CheckoutPage />} />
+        <Route path="/admin"       element={<AdminPage />} />
       </Routes>
     </CartProvider>
   );
 }
+
+export default App;

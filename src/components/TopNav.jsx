@@ -1,54 +1,63 @@
 import React from 'react';
-import { Navbar, Container, Button, Badge } from 'react-bootstrap';
+import { Navbar, Container, Badge, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { FaSun, FaMoon, FaShoppingCart, FaWhatsapp } from 'react-icons/fa';
 import { useCart } from '../CartContext';
-import './TopNav.css';
 
-/**
- * TopNav — sticky dark navbar with animated cart badge.
- * Props:
- *   onCartOpen: () => void   — opens the CartModal
- */
-export default function TopNav({ onCartOpen }) {
-  const { paidQty, totalQty } = useCart();
+const WHATSAPP_URL =
+  'https://wa.me/201552323060?text=أهلاً،%20عايز%20أطبع%20استيكرات%20مخصوص';
+
+function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
+  const { totalQuantity } = useCart();
 
   return (
-    <Navbar className="topnav" expand="lg" sticky="top">
-      <Container fluid="xl">
-        {/* Brand */}
-        <Navbar.Brand as={Link} to="/" className="topnav__brand">
-          <span className="brand-icon">🎨</span>
-          <span className="brand-name">
-            لصق <span className="brand-accent">لصقة</span>
-          </span>
+    <Navbar className="app-navbar" expand={false} sticky="top">
+      <Container fluid="xl" className="d-flex align-items-center justify-content-between">
+
+        {/* Left side: cart + theme toggle */}
+        <div className="navbar-actions-left">
+          <Button className="btn-cart position-relative" onClick={onOpenCart}>
+            <FaShoppingCart />
+            {totalQuantity > 0 && (
+              <span className="cart-badge badge rounded-pill position-absolute top-0 start-100 translate-middle">
+                {totalQuantity}
+              </span>
+            )}
+          </Button>
+
+          <button className="btn-theme-toggle" onClick={onToggleTheme}>
+            {isDarkMode ? <FaSun /> : <FaMoon />}
+          </button>
+        </div>
+
+        {/* Center: Logo */}
+        <Navbar.Brand as={Link} to="/" className="navbar-logo-wrap">
+          <img
+            src="/logo.png"
+            alt="laz2a"
+            className="navbar-logo"
+            onError={function (e) { e.target.style.display = 'none'; }}
+          />
         </Navbar.Brand>
 
-        {/* Promo ticker */}
-        {paidQty >= 5 && (
-          <span className="topnav__ticker d-none d-md-inline">
-            🎉 You unlocked a promo! Check your cart.
-          </span>
-        )}
+        {/* Right side: brand name + WhatsApp */}
+        <div className="navbar-actions-right">
+          <span className="navbar-brand-text text-metallic">لزقة | laz2a</span>
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-metallic-gold py-1 px-3"
+            title="استيكرات مخصوص"
+          >
+            <FaWhatsapp style={{ fontSize: '1.2rem' }} />
+            <span className="btn-whatsapp-label me-1">مخصوص</span>
+          </a>
+        </div>
 
-        {/* Cart button */}
-        <Button
-          variant="warning"
-          className="topnav__cart-btn"
-          onClick={onCartOpen}
-        >
-          🛒
-          {paidQty > 0 && (
-            <Badge bg="dark" className="cart-badge">
-              {paidQty}
-            </Badge>
-          )}
-          {totalQty > paidQty && (
-            <span className="free-tag ms-1 d-none d-sm-inline">
-              +{totalQty - paidQty} FREE
-            </span>
-          )}
-        </Button>
       </Container>
     </Navbar>
   );
 }
+
+export default TopNav;

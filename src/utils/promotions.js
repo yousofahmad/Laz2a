@@ -1,73 +1,38 @@
 /**
- * Promotions logic for Lesa Las2a Sticker Shop.
- * Base price: 10 EGP per sticker.
+ * promotions.js
  *
- * "Buy X, get Y free" tiers (cumulative — always applies the best matching tier).
- * The customer pays for X stickers and receives X + Y stickers total.
+ * Tiers (total items in cart = pay X, get Y free):
+ *   Cart >= 44 items  → 14 free → discount: 140 EGP
+ *   Cart >= 29 items  → 9 free  → discount: 90 EGP
+ *   Cart >= 14 items  → 4 free  → discount: 40 EGP
+ *   Else              → 0 free  → discount: 0 EGP
  */
 
-export const BASE_PRICE = 10; // EGP
+const PRICE_PER_STICKER = 10; // EGP — never changes
 
-/**
- * Promotion tiers: { buy, free }
- * Sorted descending so we always match the highest qualifying tier first.
- */
+// Tiers ordered from highest to lowest so we always match the best deal
 const TIERS = [
-  { buy: 200, free: 355 },
-  { buy: 190, free: 330 },
-  { buy: 180, free: 315 },
-  { buy: 170, free: 290 },
-  { buy: 160, free: 265 },
-  { buy: 150, free: 240 },
-  { buy: 140, free: 225 },
-  { buy: 130, free: 210 },
-  { buy: 120, free: 185 },
-  { buy: 110, free: 160 },
-  { buy: 100, free: 140 },
-  { buy: 90,  free: 125 },
-  { buy: 80,  free: 110 },
-  { buy: 60,  free: 85  },
-  { buy: 50,  free: 70  },
-  { buy: 40,  free: 55  },
-  { buy: 30,  free: 40  },
-  { buy: 20,  free: 25  },
-  { buy: 10,  free: 12  },
-  { buy: 5,   free: 5   },
+  { minQty: 44, freeItems: 14 },
+  { minQty: 29, freeItems: 9  },
+  { minQty: 14, freeItems: 4  },
 ];
 
 /**
- * Given the total number of stickers in the cart, returns:
- *   - paidQty    : how many stickers the customer actually pays for
- *   - freeQty    : how many stickers the customer gets for free
- *   - totalQty   : paidQty + freeQty (total stickers received)
- *   - totalPrice : paidQty * BASE_PRICE  (EGP)
- *   - tier       : the matched tier object, or null if no promo applies
- *
- * "Buy X, get Y free" means: customer puts X stickers in cart,
- * pays 10 EGP × X, and receives X + Y stickers.
- *
- * @param {number} cartQty - number of sticker units selected by the user
- * @returns {{ paidQty: number, freeQty: number, totalQty: number, totalPrice: number, tier: object|null }}
+ * Given total quantity in cart, returns:
+ *   { freeItems, discountAmount, subtotal, finalTotal }
  */
-export function calculatePromotion(cartQty) {
-  const qty = Math.max(0, Math.floor(cartQty));
+export function calculatePromo(totalQty) {
+  // Find the best matching tier
+  const tier = TIERS.find(function (t) { return totalQty >= t.minQty; });
 
-  const tier = TIERS.find((t) => qty >= t.buy) || null;
+  const freeItems      = tier ? tier.freeItems : 0;
+  const discountAmount = freeItems * PRICE_PER_STICKER;
+  const subtotal       = totalQty * PRICE_PER_STICKER;
+  const finalTotal     = subtotal - discountAmount;
 
-  const freeQty = tier ? tier.free : 0;
-  const paidQty = qty;
-  const totalQty = paidQty + freeQty;
-  const totalPrice = paidQty * BASE_PRICE;
+  // How many more items until the next tier unlocks
+  const nextTier = TIERS.slice().reverse().find(function (t) { return t.minQty > totalQty; });
+  const itemsToNextTier = nextTier ? nextTier.minQty - totalQty : null;
 
-  return { paidQty, freeQty, totalQty, totalPrice, tier };
-}
-
-/**
- * Returns a human-readable summary string of the active promotion.
- * @param {object|null} tier
- * @returns {string}
- */
-export function promoLabel(tier) {
-  if (!tier) return '';
-  return `🎉 Buy ${tier.buy}, get ${tier.free} FREE! (${tier.buy + tier.free} stickers total)`;
+  return { freeItems, discountAmount, subtotal, finalTotal, itemsToNextTier };
 }

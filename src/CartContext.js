@@ -1,80 +1,86 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { calculatePromotion } from './utils/promotions';
+import React, { createContext, useContext, useState } from 'react';
+import { calculatePromo } from './utils/promotions';
 
 const CartContext = createContext(null);
 
-/**
- * CartProvider wraps the app and exposes the cart state + actions.
- *
- * Cart shape:
- *   items: Array<{ id, name, image, quantity }>
- *
- * Derived values (re-computed on every render from promotions.js):
- *   totalQty    – stickers the customer will actually receive
- *   paidQty     – stickers the customer is paying for
- *   freeQty     – stickers earned for free
- *   totalPrice  – amount due in EGP
- *   activeTier  – matched promotion tier (or null)
- */
 export function CartProvider({ children }) {
-  const [items, setItems] = useState([]);
+  const [cart, setCart] = useState([]); // Array of { product, quantity }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
-  const paidQty = items.reduce((sum, i) => sum + i.quantity, 0);
-  const promo   = calculatePromotion(paidQty);
-
-  // ── Actions ──────────────────────────────────────────────────────────────
-
-  /** Add a sticker to cart (or increment its quantity). */
-  const addItem = useCallback((sticker) => {
-    setItems((prev) => {
-      const existing = prev.find((i) => i.id === sticker.id);
+  // Add a product to the cart (or increment quantity if already there)
+  function addToCart(product) {
+    setCart(function (prev) {
+      const existing = prev.find(function (item) {
+        return item.product.id === product.id;
+      });
       if (existing) {
-        return prev.map((i) =>
-          i.id === sticker.id ? { ...i, quantity: i.quantity + 1 } : i
-        );
+        return prev.map(function (item) {
+          if (item.product.id === product.id) {
+            return { ...item, quantity: item.quantity + 1 };
+          }
+          return item;
+        });
       }
-      return [...prev, { ...sticker, quantity: 1 }];
+      return [...prev, { product: product, quantity: 1 }];
     });
-  }, []);
+  }
 
-  /** Set a specific quantity for a cart item (removes it if qty <= 0). */
-  const setQuantity = useCallback((id, quantity) => {
-    setItems((prev) => {
-      if (quantity <= 0) return prev.filter((i) => i.id !== id);
-      return prev.map((i) => (i.id === id ? { ...i, quantity } : i));
+  // Set a specific quantity (removes item if qty drops to 0)
+  function updateQuantity(productId, newQty) {
+    if (newQty <= 0) { removeFromCart(productId); return; }
+    setCart(function (prev) {
+      return prev.map(function (item) {
+        if (item.product.id === productId) {
+          return { ...item, quantity: newQty };
+        }
+        return item;
+      });
     });
-  }, []);
+  }
 
-  /** Remove an item entirely from the cart. */
-  const removeItem = useCallback((id) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
-  }, []);
+  // Remove an item completely
+  function removeFromCart(productId) {
+    setCart(function (prev) {
+      return prev.filter(function (item) {
+        return item.product.id !== productId;
+      });
+    });
+  }
 
-  /** Empty the entire cart. */
-  const clearCart = useCallback(() => setItems([]), []);
+  // Clear the entire cart (called after order success)
+  function clearCart() {
+    setCart([]);
+  }
 
-  const value = {
-    items,
-    // Promo-derived values
-    paidQty:    promo.paidQty,
-    freeQty:    promo.freeQty,
-    totalQty:   promo.totalQty,
-    totalPrice: promo.totalPrice,
-    activeTier: promo.tier,
-    // Actions
-    addItem,
-    setQuantity,
-    removeItem,
-    clearCart,
-  };
+  // Total sticker count across all items
+  const totalQuantity = cart.reduce(function (sum, item) {
+    return sum + item.quantity;
+  }, 0);
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  // Derived pricing — recalculated whenever cart changes
+  const promo = calculatePromo(totalQuantity);
+
+  return (
+    <CartContext.Provider
+      value={{
+        cart,
+        totalQuantity,
+        addToCart,
+        updateQuantity,
+        removeFromCart,
+        clearCart,
+        // Pricing
+        subtotal:       promo.subtotal,
+        discountAmount: promo.discountAmount,
+        finalTotal:     promo.finalTotal,
+        freeItems:      promo.freeItems,
+        itemsToNextTier: promo.itemsToNextTier,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 }
 
-/** Convenience hook — throws if used outside <CartProvider>. */
 export function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error('useCart must be used inside <CartProvider>');
-  return ctx;
+  return useContext(CartContext);
 }

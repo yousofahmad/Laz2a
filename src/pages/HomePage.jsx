@@ -1,124 +1,141 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, InputGroup } from 'react-bootstrap';
+import React, { useState, useMemo } from 'react';
+import { Container, Row, Col, InputGroup, Form } from 'react-bootstrap';
+import { FaWhatsapp, FaSearch } from 'react-icons/fa';
 import ProductCard from '../components/ProductCard';
-import stickers from '../data/stickers';
-import { TIERS } from '../utils/promotions';
-import './HomePage.css';
+import catalog from '../data/catalog.json';
 
-const CATEGORIES = ['All', ...new Set(stickers.map((s) => s.category))];
+const WHATSAPP_URL =
+  'https://wa.me/201552323060?text=أهلاً،%20عايز%20أطبع%20استيكرات%20مخصوص';
 
-/**
- * HomePage — Hero section + filterable sticker grid + promotions table.
- */
-export default function HomePage() {
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('All');
+function HomePage() {
+  const [activeCategory, setActiveCategory] = useState('الكل');
+  const [searchQuery, setSearchQuery]       = useState('');
 
-  const filtered = stickers.filter((s) => {
-    const matchCat = category === 'All' || s.category === category;
-    const matchSearch = s.name.toLowerCase().includes(search.toLowerCase());
-    return matchCat && matchSearch;
-  });
+  // Extract unique categories in order of first appearance (clean strings)
+  const categories = useMemo(function () {
+    const seen = new Set();
+    const result = ['الكل'];
+    catalog.forEach(function (p) {
+      if (p.category_name_ar) {
+        const cleanCat = p.category_name_ar.trim();
+        const normalize = cleanCat.toLowerCase(); // good practice even for Arabic
+        if (cleanCat !== '' && !seen.has(normalize)) {
+          seen.add(normalize);
+          result.push(cleanCat); // Push the correctly cased/spaced one for display
+        }
+      }
+    });
+    return result;
+  }, []);
+
+  // Filter by category AND search query
+  const filteredProducts = useMemo(function () {
+    const query = searchQuery.trim().toLowerCase();
+    return catalog.filter(function (p) {
+      const pCat = p.category_name_ar ? p.category_name_ar.trim() : '';
+      const matchesCategory =
+        activeCategory === 'الكل' || pCat === activeCategory;
+      const matchesSearch =
+        !query ||
+        (p.title && p.title.toLowerCase().includes(query)) ||
+        (pCat.toLowerCase().includes(query));
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, searchQuery]);
 
   return (
-    <>
-      {/* ── Hero ─────────────────────────────────────────────────── */}
-      <section className="hero">
-        <div className="hero__bg-grid" aria-hidden />
-        <Container className="hero__content">
-          <div className="hero__badge">✨ Free stickers when you bulk order</div>
-          <h1 className="hero__title">
-            The Coolest Stickers
-            <br />
-            <span className="hero__title--accent">in Egypt 🇪🇬</span>
-          </h1>
-          <p className="hero__sub">
-            Premium die-cut stickers. Waterproof. Vivid. Yours.
-            <br />
-            Buy more, get more — free.
+    <div style={{ paddingBottom: '4rem' }}>
+      {/* ── Hero Section ──────────────────────────────────────────── */}
+      <div className="hero-section">
+        <Container fluid="xl">
+          {/* Large centered logo */}
+          <div className="hero-logo-wrap">
+            <img
+              src="/logo.png"
+              alt="laz2a"
+              className="hero-logo"
+              onError={function (e) { e.target.style.display = 'none'; }}
+            />
+          </div>
+
+          <p className="hero-subtitle">
+            استيكرات بريميوم بأفضل الأسعار وأعلى جودة
           </p>
-          <a href="#shop" className="hero__cta">
-            Shop Now →
+
+          {/* WhatsApp CTA */}
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-metallic-gold"
+            style={{ padding: '12px 32px', fontSize: '1.2rem', marginTop: '1rem' }}
+          >
+            <FaWhatsapp style={{ marginLeft: '8px', fontSize: '1.4rem' }} />
+            استيكرات مخصوص
           </a>
         </Container>
-      </section>
+      </div>
 
-      {/* ── Promotions Strip ──────────────────────────────────────── */}
-      <section className="promo-strip">
-        <Container>
-          <h2 className="section-title">🎁 Bulk Deal Tiers</h2>
-          <div className="promo-table-wrap">
-            <table className="promo-table">
-              <thead>
-                <tr>
-                  <th>You Pay For</th>
-                  <th>You Get FREE</th>
-                  <th>Total Received</th>
-                  <th>Price (EGP)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...TIERS].reverse().map((t) => (
-                  <tr key={t.buy}>
-                    <td>{t.buy} stickers</td>
-                    <td className="free-col">+{t.free}</td>
-                    <td>{t.buy + t.free} stickers</td>
-                    <td className="price-col">{t.buy * 10} EGP</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* ── Products Section ──────────────────────────────────────── */}
+      <div style={{ padding: '2.5rem 0' }}>
+        <Container fluid="xl">
+          {/* Search bar */}
+          <InputGroup className="search-bar mb-4">
+            <InputGroup.Text className="search-icon">
+              <FaSearch />
+            </InputGroup.Text>
+            <Form.Control
+              type="text"
+              placeholder="ابحث عن استيكر..."
+              className="form-ctrl search-input"
+              value={searchQuery}
+              onChange={function (e) { setSearchQuery(e.target.value); }}
+            />
+          </InputGroup>
+
+          {/* Category filter pills — horizontal scroll, no wrap */}
+          <div className="category-container">
+            {categories.map(function (cat) {
+              return (
+                <button
+                  key={cat}
+                  className={'btn-filter' + (activeCategory === cat ? ' active' : '')}
+                  onClick={function () { setActiveCategory(cat); }}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
-        </Container>
-      </section>
 
-      {/* ── Shop Grid ─────────────────────────────────────────────── */}
-      <section className="shop-grid" id="shop">
-        <Container>
-          <h2 className="section-title">🛍 Browse Stickers</h2>
+          {/* Result count */}
+          <p className="filter-count">
+            {filteredProducts.length} استيكر
+            {activeCategory !== 'الكل' && <> في "{activeCategory}"</>}
+            {searchQuery && <> · نتائج "{searchQuery}"</>}
+          </p>
 
-          {/* Filters */}
-          <Row className="mb-4 g-3 align-items-center">
-            <Col xs={12} md={5}>
-              <InputGroup>
-                <InputGroup.Text className="filter-addon">🔍</InputGroup.Text>
-                <Form.Control
-                  placeholder="Search stickers…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="filter-input"
-                />
-              </InputGroup>
-            </Col>
-            <Col xs={12} md={7}>
-              <div className="category-pills">
-                {CATEGORIES.map((c) => (
-                  <button
-                    key={c}
-                    className={`cat-pill ${category === c ? 'cat-pill--active' : ''}`}
-                    onClick={() => setCategory(c)}
-                  >
-                    {c}
-                  </button>
-                ))}
-              </div>
-            </Col>
-          </Row>
-
-          {/* Grid */}
-          {filtered.length === 0 ? (
-            <p className="text-center text-muted py-5">No stickers match your search.</p>
-          ) : (
+          {/* Products grid */}
+          {filteredProducts.length > 0 ? (
             <Row xs={2} sm={2} md={3} lg={4} className="g-3">
-              {filtered.map((s) => (
-                <Col key={s.id}>
-                  <ProductCard sticker={s} />
-                </Col>
-              ))}
+              {filteredProducts.map(function (product) {
+                return (
+                  <Col key={product.id}>
+                    <ProductCard product={product} />
+                  </Col>
+                );
+              })}
             </Row>
+          ) : (
+            <div className="empty-search-state">
+              <FaSearch style={{ fontSize: '2.5rem', color: 'var(--text-muted)', marginBottom: '1rem' }} />
+              <p>مفيش نتائج لـ "{searchQuery}"</p>
+            </div>
           )}
         </Container>
-      </section>
-    </>
+      </div>
+    </div>
   );
 }
+
+export default HomePage;
