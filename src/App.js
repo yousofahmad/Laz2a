@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { CartProvider } from './CartContext';
 import TopNav       from './components/TopNav';
+import AnnouncementBar from './components/AnnouncementBar';
 import CartModal    from './components/CartModal';
 import HomePage     from './pages/HomePage';
 import ProductPage  from './pages/ProductPage';
@@ -26,6 +27,7 @@ function App() {
 
   return (
     <CartProvider>
+      <AnnouncementBar />
       <TopNav
         isDarkMode={isDarkMode}
         onToggleTheme={handleToggleTheme}
