@@ -11,8 +11,8 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
   const { totalQuantity } = useCart();
 
   return (
-    <Navbar className="app-navbar" expand={false} sticky="top">
-      <Container fluid="xl" className="d-flex align-items-center justify-content-between">
+    <Navbar className="app-navbar py-2 py-md-3" expand={false} sticky="top">
+      <Container fluid="xl" className="d-flex align-items-center justify-content-between flex-wrap gap-2">
 
         {/* Left side: cart + theme toggle */}
         <div className="navbar-actions-left">
@@ -31,7 +31,7 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
         </div>
 
         {/* Center: Logo */}
-        <Navbar.Brand as={Link} to="/" className="navbar-logo-wrap">
+        <Navbar.Brand as={Link} to="/" className="navbar-logo-wrap m-0">
           <img
             src="/logo.png"
             alt="laz2a"
@@ -42,16 +42,18 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
 
         {/* Right side: brand name + WhatsApp */}
         <div className="navbar-actions-right">
-          <span className="navbar-brand-text text-metallic">لزقة | laz2a</span>
+          <Link to="/" className="navbar-brand-text text-metallic text-decoration-none d-none d-sm-inline">
+            لزقة | laz2a
+          </Link>
           <a
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-metallic-gold py-1 px-3"
+            className="btn btn-metallic-gold py-1 px-2 px-md-3"
             title="استيكرات مخصوص"
           >
             <FaWhatsapp style={{ fontSize: '1.2rem' }} />
-            <span className="btn-whatsapp-label me-1">مخصوص</span>
+            <span className="btn-whatsapp-label d-none d-md-inline ms-1">مخصوص</span>
           </a>
         </div>
 

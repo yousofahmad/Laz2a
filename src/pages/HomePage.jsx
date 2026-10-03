@@ -117,10 +117,10 @@ function HomePage() {
 
           {/* Products grid */}
           {filteredProducts.length > 0 ? (
-            <Row xs={2} sm={2} md={3} lg={4} className="g-3">
+            <Row className="g-3">
               {filteredProducts.map(function (product) {
                 return (
-                  <Col key={product.id}>
+                  <Col key={product.id} xs={6} sm={6} md={4} lg={3}>
                     <ProductCard product={product} />
                   </Col>
                 );

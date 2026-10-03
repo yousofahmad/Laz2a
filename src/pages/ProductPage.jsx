@@ -78,7 +78,7 @@ function ProductPage() {
         {/* ── Main product layout (RTL: image right, details left) ── */}
         <Row className="product-main-row g-4">
           {/* Image column — RIGHT in RTL */}
-          <Col md={5} className="product-image-col">
+          <Col xs={12} md={6} className="product-image-col">
             <div className="product-image-frame">
               <img
                 src={'/stickers/' + product.relative_path}
@@ -93,7 +93,7 @@ function ProductPage() {
           </Col>
 
           {/* Details column — LEFT in RTL */}
-          <Col md={7} className="product-details-col">
+          <Col xs={12} md={6} className="product-details-col">
             {/* Category badge */}
             <div className="mb-2">
               <span className="product-cat-badge d-inline-block mb-3">
@@ -163,10 +163,10 @@ function ProductPage() {
         {similarProducts.length > 0 && (
           <div className="similar-section">
             <h3 className="similar-title">منتجات مشابهة</h3>
-            <Row xs={2} sm={2} md={4} className="g-3">
+            <Row className="g-3">
               {similarProducts.map(function (p) {
                 return (
-                  <Col key={p.id}>
+                  <Col key={p.id} xs={6} sm={6} md={4} lg={3}>
                     <ProductCard product={p} />
                   </Col>
                 );

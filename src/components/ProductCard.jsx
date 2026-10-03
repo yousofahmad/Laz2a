@@ -46,17 +46,17 @@ function ProductCard({ product }) {
       </div>
 
       {/* Footer: price + add button */}
-      <div className="product-card-footer">
-        <span className="product-price">10 ج</span>
+      <div className="product-card-footer d-flex justify-content-between align-items-center gap-2">
+        <span className="product-price text-nowrap fs-5 fw-bold text-metallic">10 جنيه</span>
 
         {isInCart ? (
-          <button className="btn-in-cart w-100">
+          <button className="btn-in-cart w-100 flex-grow-1">
             <FaCheck style={{ marginLeft: '5px' }} />
             في السلة ({cartItem.quantity})
           </button>
         ) : (
           <button
-            className="btn btn-metallic-gold w-100"
+            className="btn btn-metallic-gold w-100 flex-grow-1"
             onClick={function (e) {
               e.preventDefault();
               addToCart(product);
