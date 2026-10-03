@@ -38,7 +38,7 @@ const DEFAULT_DELIVERY = 'obour_pickup';
 function CheckoutPage() {
   const { 
     cart, totalQuantity, clearCart, 
-    subtotal, discountAmount, finalTotal, freeItems 
+    subtotal, discountAmount, finalTotal, freeItems, packagesCount
   } = useCart();
   const navigate = useNavigate();
 
@@ -214,6 +214,12 @@ function CheckoutPage() {
               كسبت <strong>{freeItems} استيكر مجاناً!</strong>
               <br />
               اكتب IDs الاستيكرات اللي عايزها مجاناً في خانة الملاحظات.
+            </div>
+          )}
+
+          {packagesCount > 0 && (
+            <div className="free-stickers-alert" style={{ marginBottom: '1.25rem', borderColor: '#4CAF50', color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)' }}>
+              <strong>وفرت 75 جنيه</strong> في كل باكدج كسبته لأنك اخترت 15 استيكر من نفس الفئة!
             </div>
           )}
 

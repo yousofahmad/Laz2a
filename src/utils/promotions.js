@@ -21,18 +21,45 @@ const TIERS = [
  * Given total quantity in cart, returns:
  *   { freeItems, discountAmount, subtotal, finalTotal }
  */
-export function calculatePromo(totalQty) {
-  // Find the best matching tier
-  const tier = TIERS.find(function (t) { return totalQty >= t.minQty; });
+export function calculatePromo(totalQty, cart = []) {
+  // 1. Group by category and find packages
+  let packagesCount = 0;
+  let remainingQty = 0;
+  
+  const catCounts = {};
+  cart.forEach(function(item) {
+    const cat = item.product.category_name_ar;
+    catCounts[cat] = (catCounts[cat] || 0) + item.quantity;
+  });
 
-  const freeItems      = tier ? tier.freeItems : 0;
-  const discountAmount = freeItems * PRICE_PER_STICKER;
-  const subtotal       = totalQty * PRICE_PER_STICKER;
-  const finalTotal     = subtotal - discountAmount;
+  Object.values(catCounts).forEach(function(qty) {
+    packagesCount += Math.floor(qty / 15);
+    remainingQty += qty % 15;
+  });
 
-  // How many more items until the next tier unlocks
-  const nextTier = TIERS.slice().reverse().find(function (t) { return t.minQty > totalQty; });
-  const itemsToNextTier = nextTier ? nextTier.minQty - totalQty : null;
+  // Package discount: 15 stickers cost 150. Package price is 75. Discount per package = 75 EGP.
+  const packageDiscount = packagesCount * 75;
 
-  return { freeItems, discountAmount, subtotal, finalTotal, itemsToNextTier };
+  // 2. Apply general tiers on the remaining items
+  const tier = TIERS.find(function (t) { return remainingQty >= t.minQty; });
+  const tierFreeItems = tier ? tier.freeItems : 0;
+  const tierDiscount = tierFreeItems * PRICE_PER_STICKER;
+
+  // 3. Calculate totals
+  const subtotal = totalQty * PRICE_PER_STICKER;
+  const discountAmount = packageDiscount + tierDiscount;
+  const finalTotal = subtotal - discountAmount;
+
+  // How many more items until the next tier unlocks (based on remaining non-package items)
+  const nextTier = TIERS.slice().reverse().find(function (t) { return t.minQty > remainingQty; });
+  const itemsToNextTier = nextTier ? nextTier.minQty - remainingQty : null;
+
+  return { 
+    freeItems: tierFreeItems, 
+    packagesCount,
+    discountAmount, 
+    subtotal, 
+    finalTotal, 
+    itemsToNextTier 
+  };
 }

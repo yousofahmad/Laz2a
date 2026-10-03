@@ -7,7 +7,7 @@ import { useCart } from '../CartContext';
 function CartModal({ show, onHide }) {
   const {
     cart, totalQuantity,
-    subtotal, discountAmount, finalTotal, freeItems, itemsToNextTier,
+    subtotal, discountAmount, finalTotal, freeItems, itemsToNextTier, packagesCount,
     updateQuantity, removeFromCart,
   } = useCart();
   const navigate = useNavigate();
@@ -100,7 +100,11 @@ function CartModal({ show, onHide }) {
             {/* Discount row — shown only when active */}
             {discountAmount > 0 && (
               <div className="cart-summary-row cart-discount-row">
-                <span>خصم ({freeItems} مجاناً)</span>
+                <span>
+                  خصم 
+                  {packagesCount > 0 && ` (${packagesCount} باكدج فئة)`}
+                  {freeItems > 0 && ` (${freeItems} مجاناً)`}
+                </span>
                 <span>− {discountAmount} ج</span>
               </div>
             )}
@@ -115,6 +119,12 @@ function CartModal({ show, onHide }) {
             {freeItems > 0 && (
               <div className="free-stickers-alert">
                 <strong>{freeItems} استيكر مجاناً</strong> — اكتب IDs الاستيكرات المجانية في ملاحظات الطلب.
+              </div>
+            )}
+            
+            {packagesCount > 0 && (
+              <div className="free-stickers-alert mt-2" style={{ borderColor: '#4CAF50', color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)' }}>
+                <strong>وفرت 75 جنيه</strong> في كل باكدج كسبته لأنك اخترت 15 استيكر من نفس الفئة!
               </div>
             )}
           </div>

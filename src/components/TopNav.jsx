@@ -50,10 +50,10 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-metallic-gold py-1 px-2 px-md-3"
-            title="استيكرات مخصوص"
+            title="Custom"
           >
             <FaWhatsapp style={{ fontSize: '1.2rem' }} />
-            <span className="btn-whatsapp-label d-none d-md-inline ms-1">مخصوص</span>
+            <span className="btn-whatsapp-label d-none d-md-inline ms-1" style={{ letterSpacing: '0.5px' }}>Custom</span>
           </a>
         </div>
 

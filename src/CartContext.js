@@ -57,7 +57,7 @@ export function CartProvider({ children }) {
   }, 0);
 
   // Derived pricing — recalculated whenever cart changes
-  const promo = calculatePromo(totalQuantity);
+  const promo = calculatePromo(totalQuantity, cart);
 
   return (
     <CartContext.Provider
@@ -73,6 +73,7 @@ export function CartProvider({ children }) {
         discountAmount: promo.discountAmount,
         finalTotal:     promo.finalTotal,
         freeItems:      promo.freeItems,
+        packagesCount:  promo.packagesCount,
         itemsToNextTier: promo.itemsToNextTier,
       }}
     >

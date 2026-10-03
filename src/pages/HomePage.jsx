@@ -47,7 +47,7 @@ function HomePage() {
     <div style={{ paddingBottom: '4rem' }}>
       {/* ── Hero Section ──────────────────────────────────────────── */}
       <div className="hero-section">
-        <Container fluid="xl">
+        <Container fluid="xl" className="text-center">
           {/* Large centered logo */}
           <div className="hero-logo-wrap">
             <img
@@ -58,7 +58,7 @@ function HomePage() {
             />
           </div>
 
-          <p className="hero-subtitle">
+          <p className="hero-subtitle text-metallic fw-bold" style={{ fontSize: '1.3rem' }}>
             استيكرات بريميوم بأفضل الأسعار وأعلى جودة
           </p>
 
@@ -71,7 +71,7 @@ function HomePage() {
             style={{ padding: '12px 32px', fontSize: '1.2rem', marginTop: '1rem' }}
           >
             <FaWhatsapp style={{ marginLeft: '8px', fontSize: '1.4rem' }} />
-            استيكرات مخصوص
+            Custom
           </a>
         </Container>
       </div>
