@@ -312,21 +312,12 @@ function CheckoutPage() {
             {/* Notes */}
             <Form.Group className="mb-4">
               <Form.Label className="form-label-dark">
-                <FaStickyNote className="label-icon" /> ملاحظات
-                {freeItems > 0 && (
-                  <span style={{ color: 'var(--color-gold)' }}>
-                    {' '}(اكتب هنا IDs الـ {freeItems} استيكر المجاني)
-                  </span>
-                )}
+                <FaStickyNote className="label-icon" /> ملاحظات إضافية (اختياري)
               </Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
-                placeholder={
-                  freeItems > 0
-                    ? `مثلاً: #12، #47 (عندك ${freeItems} مجاناً)`
-                    : 'أي طلبات خاصة…'
-                }
+                placeholder="أي طلبات خاصة…"
                 className="form-ctrl"
                 value={notes}
                 onChange={function (e) { setNotes(e.target.value); }}

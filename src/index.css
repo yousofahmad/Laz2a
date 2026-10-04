@@ -1287,9 +1287,9 @@ body {
 }
 
 .border-metallic {
-  border: 2px solid transparent !important;
-  border-image: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important;
-  border-image-slice: 1 !important;
+  border: 2px solid var(--color-gold) !important;
+  box-shadow: 0 0 15px rgba(201, 168, 76, 0.2), inset 0 0 10px rgba(201, 168, 76, 0.1) !important;
+  border-radius: 20px !important;
 }
 
 /* ============================================================
@@ -1348,6 +1348,8 @@ body {
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
   margin-bottom: 0.5rem;
+  border-radius: 30px !important;
+  padding: 8px 24px;
 }
 
 .tabs-metallic .nav-link.active {
@@ -1416,4 +1418,21 @@ body {
 .cart-modal-footer {
   border-bottom-left-radius: 20px !important;
   border-bottom-right-radius: 20px !important;
+}
+
+/* Force ALL modals to clip their contents to their rounded corners */
+.modal-content,
+.border-metallic {
+  border-radius: 24px !important;
+  overflow: hidden !important;
+}
+
+.modal-header, .cart-modal-header {
+  border-top-left-radius: 24px !important;
+  border-top-right-radius: 24px !important;
+}
+
+.modal-footer, .cart-modal-footer {
+  border-bottom-left-radius: 24px !important;
+  border-bottom-right-radius: 24px !important;
 }
