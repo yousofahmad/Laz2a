@@ -1338,3 +1338,37 @@ body {
   -webkit-user-drag: none;
   pointer-events: auto;
 }
+
+/* ============================================================
+   Tabs Metallic
+   ============================================================ */
+.tabs-metallic .nav-link {
+  color: var(--text-muted);
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.tabs-metallic .nav-link.active {
+  background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important;
+  color: #0F1520 !important;
+  border-color: transparent;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   Offers Modal Styles
+   ============================================================ */
+.offer-tier-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}

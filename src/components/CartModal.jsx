@@ -7,7 +7,7 @@ import { useCart } from '../CartContext';
 function CartModal({ show, onHide }) {
   const {
     cart, totalQuantity,
-    subtotal, discountAmount, finalTotal, freeItems, itemsToNextTier, packagesCount,
+    subtotal, discountAmount, finalTotal, freeItems, itemsToNextTier,
     updateQuantity, removeFromCart,
   } = useCart();
   const navigate = useNavigate();
@@ -69,7 +69,9 @@ function CartModal({ show, onHide }) {
               </div>
 
               {/* Item subtotal */}
-              <div className="cart-item-subtotal">{item.quantity * 10} ج</div>
+              <div className="cart-item-subtotal">
+                {item.product.isCollection ? item.product.price * item.quantity : item.quantity * 10} ج
+              </div>
 
               {/* Remove */}
               <button
@@ -89,24 +91,20 @@ function CartModal({ show, onHide }) {
             {/* Next tier nudge */}
             {itemsToNextTier !== null && (
               <p className="cart-nudge">
-                أضف {itemsToNextTier} استيكر{itemsToNextTier === 1 ? '' : 'ات'} أكتر وهتوفر أكتر!
+                أضف {itemsToNextTier} استيكر فردي كمان وهتوفر أكتر!
               </p>
             )}
 
             {/* Subtotal row */}
             <div className="cart-summary-row">
-              <span>المجموع الأصلي ({totalQuantity} استيكر)</span>
+              <span>المجموع الأصلي</span>
               <span>{subtotal} ج</span>
             </div>
 
             {/* Discount row — shown only when active */}
             {discountAmount > 0 && (
               <div className="cart-summary-row cart-discount-row">
-                <span>
-                  خصم 
-                  {packagesCount > 0 && ` (${packagesCount} باكدج فئة)`}
-                  {freeItems > 0 && ` (${freeItems} مجاناً)`}
-                </span>
+                <span>خصم العروض ({freeItems} مجاناً)</span>
                 <span>− {discountAmount} ج</span>
               </div>
             )}
@@ -121,12 +119,6 @@ function CartModal({ show, onHide }) {
             {freeItems > 0 && (
               <div className="free-stickers-alert">
                 <strong>كسبت {freeItems} استيكر مجاناً!</strong>
-              </div>
-            )}
-            
-            {packagesCount > 0 && (
-              <div className="free-stickers-alert mt-2" style={{ borderColor: '#4CAF50', color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)' }}>
-                <strong>وفرت 75 جنيه</strong> في كل باكدج كسبته لأنك اخترت 15 استيكر من نفس الفئة!
               </div>
             )}
           </div>

@@ -1,5 +1,21 @@
 [
   {
+    "id": 9001,
+    "title": "كوليكشن المبرمجين (15 استيكر)",
+    "category_name_ar": "كوليكشنات",
+    "relative_path": "01_Programming_and_Developers/010.webp",
+    "isCollection": true,
+    "price": 75
+  },
+  {
+    "id": 9002,
+    "title": "كوليكشن الميمز والكوميكس (15 استيكر)",
+    "category_name_ar": "كوليكشنات",
+    "relative_path": "03_Memes_and_Funny/020.webp",
+    "isCollection": true,
+    "price": 75
+  },
+  {
     "id": 1,
     "filename": "001.png",
     "category_folder": "01_Tech_and_Programming",

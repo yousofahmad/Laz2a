@@ -1,65 +1,60 @@
 /**
  * promotions.js
  *
- * Tiers (total items in cart = pay X, get Y free):
- *   Cart >= 44 items  → 14 free → discount: 140 EGP
- *   Cart >= 29 items  → 9 free  → discount: 90 EGP
- *   Cart >= 14 items  → 4 free  → discount: 40 EGP
- *   Else              → 0 free  → discount: 0 EGP
+ * New Tiers (Individual Stickers Only):
+ *   Buy 100 → get 55 free
+ *   Buy 75  → get 35 free
+ *   Buy 50  → get 20 free
+ *   Buy 40  → get 15 free
+ *   Buy 30  → get 10 free
+ *   Buy 20  → get 5 free
+ *   Buy 10  → get 2 free
  */
 
-const PRICE_PER_STICKER = 10; // EGP — never changes
+const PRICE_PER_STICKER = 10;
 
-// Tiers ordered from highest to lowest so we always match the best deal
 const TIERS = [
-  { minQty: 44, freeItems: 14 },
-  { minQty: 29, freeItems: 9  },
-  { minQty: 14, freeItems: 4  },
+  { minQty: 100, freeItems: 55 },
+  { minQty: 75,  freeItems: 35 },
+  { minQty: 50,  freeItems: 20 },
+  { minQty: 40,  freeItems: 15 },
+  { minQty: 30,  freeItems: 10 },
+  { minQty: 20,  freeItems: 5  },
+  { minQty: 10,  freeItems: 2  },
 ];
 
-/**
- * Given total quantity in cart, returns:
- *   { freeItems, discountAmount, subtotal, finalTotal }
- */
-export function calculatePromo(totalQty, cart = []) {
-  // 1. Group by category and find packages
-  let packagesCount = 0;
-  let remainingQty = 0;
-  
-  const catCounts = {};
+export function calculatePromo(totalQtyIgnored, cart = []) {
+  let individualQty = 0;
+  let collectionsTotal = 0;
+
   cart.forEach(function(item) {
-    const cat = item.product.category_name_ar;
-    catCounts[cat] = (catCounts[cat] || 0) + item.quantity;
+    if (item.product.isCollection) {
+      collectionsTotal += (item.product.price || 75) * item.quantity;
+    } else {
+      individualQty += item.quantity;
+    }
   });
 
-  Object.values(catCounts).forEach(function(qty) {
-    packagesCount += Math.floor(qty / 15);
-    remainingQty += qty % 15;
-  });
+  const tier = TIERS.find(function(t) { return individualQty >= t.minQty; });
+  const freeItems = tier ? tier.freeItems : 0;
+  
+  const individualDiscount = freeItems * PRICE_PER_STICKER;
+  const individualBasePrice = individualQty * PRICE_PER_STICKER;
+  const individualFinalPrice = individualBasePrice - individualDiscount;
 
-  // Package discount: 15 stickers cost 150. Package price is 75. Discount per package = 75 EGP.
-  const packageDiscount = packagesCount * 75;
+  const finalTotal = individualFinalPrice + collectionsTotal;
+  const subtotal = individualBasePrice + collectionsTotal; // raw price before discounts
+  const discountAmount = individualDiscount; // collections are fixed-price, no "discount" math shown for them
 
-  // 2. Apply general tiers on the remaining items
-  const tier = TIERS.find(function (t) { return remainingQty >= t.minQty; });
-  const tierFreeItems = tier ? tier.freeItems : 0;
-  const tierDiscount = tierFreeItems * PRICE_PER_STICKER;
-
-  // 3. Calculate totals
-  const subtotal = totalQty * PRICE_PER_STICKER;
-  const discountAmount = packageDiscount + tierDiscount;
-  const finalTotal = subtotal - discountAmount;
-
-  // How many more items until the next tier unlocks (based on remaining non-package items)
-  const nextTier = TIERS.slice().reverse().find(function (t) { return t.minQty > remainingQty; });
-  const itemsToNextTier = nextTier ? nextTier.minQty - remainingQty : null;
+  const nextTier = TIERS.slice().reverse().find(function(t) { return t.minQty > individualQty; });
+  const itemsToNextTier = nextTier ? nextTier.minQty - individualQty : null;
 
   return { 
-    freeItems: tierFreeItems, 
-    packagesCount,
+    freeItems, 
     discountAmount, 
     subtotal, 
     finalTotal, 
-    itemsToNextTier 
+    itemsToNextTier,
+    individualQty
   };
 }

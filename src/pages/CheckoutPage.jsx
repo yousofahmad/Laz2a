@@ -38,7 +38,7 @@ const DEFAULT_DELIVERY = 'obour_pickup';
 function CheckoutPage() {
   const { 
     cart, totalQuantity, clearCart, 
-    subtotal, discountAmount, finalTotal, freeItems, packagesCount
+    subtotal, discountAmount, finalTotal, freeItems
   } = useCart();
   const navigate = useNavigate();
 
@@ -96,7 +96,7 @@ function CheckoutPage() {
           id:       item.product.id,
           name:     item.product.title,
           quantity: item.quantity,
-          price:    item.quantity * 10,
+          price:    item.product.isCollection ? item.product.price * item.quantity : item.quantity * 10,
         };
       }),
     };
@@ -195,7 +195,7 @@ function CheckoutPage() {
           <h2 className="checkout-title">إتمام الطلب</h2>
           
           <div className="checkout-subtitle" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-            <span>المجموع الأصلي: {subtotal} جنيه ({totalQuantity} استيكر)</span>
+            <span>المجموع الأصلي: {subtotal} جنيه</span>
             {discountAmount > 0 && (
               <span style={{ color: '#4CAF50', fontWeight: 'bold' }}>
                 خصم: -{discountAmount} جنيه
@@ -211,12 +211,6 @@ function CheckoutPage() {
             <div className="free-stickers-alert" style={{ marginBottom: '1.25rem' }}>
               <FaGift style={{ marginLeft: '6px' }} />
               كسبت <strong>{freeItems} استيكر مجاناً!</strong>
-            </div>
-          )}
-
-          {packagesCount > 0 && (
-            <div className="free-stickers-alert" style={{ marginBottom: '1.25rem', borderColor: '#4CAF50', color: '#4CAF50', background: 'rgba(76, 175, 80, 0.1)' }}>
-              <strong>وفرت 75 جنيه</strong> في كل باكدج كسبته لأنك اخترت 15 استيكر من نفس الفئة!
             </div>
           )}
 

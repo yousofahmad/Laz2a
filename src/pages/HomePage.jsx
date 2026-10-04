@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Container, Row, Col, InputGroup, Form } from 'react-bootstrap';
+import { Container, Row, Col, InputGroup, Form, Nav } from 'react-bootstrap';
 import { FaWhatsapp, FaSearch } from 'react-icons/fa';
 import ProductCard from '../components/ProductCard';
 import catalog from '../data/catalog.json';
@@ -10,28 +10,33 @@ const WHATSAPP_URL =
 function HomePage() {
   const [activeCategory, setActiveCategory] = useState('الكل');
   const [searchQuery, setSearchQuery]       = useState('');
+  const [mainTab, setMainTab]               = useState('individual'); // 'individual' or 'collections'
 
-  // Extract unique categories in order of first appearance (clean strings)
+  // Extract unique categories for individual stickers only
   const categories = useMemo(function () {
     const seen = new Set();
     const result = ['الكل'];
     catalog.forEach(function (p) {
-      if (p.category_name_ar) {
+      if (p.category_name_ar && !p.isCollection) {
         const cleanCat = p.category_name_ar.trim();
-        const normalize = cleanCat.toLowerCase(); // good practice even for Arabic
+        const normalize = cleanCat.toLowerCase();
         if (cleanCat !== '' && !seen.has(normalize)) {
           seen.add(normalize);
-          result.push(cleanCat); // Push the correctly cased/spaced one for display
+          result.push(cleanCat);
         }
       }
     });
     return result;
   }, []);
 
-  // Filter by category AND search query
+  // Filter by tab, category AND search query
   const filteredProducts = useMemo(function () {
     const query = searchQuery.trim().toLowerCase();
     return catalog.filter(function (p) {
+      const isCol = !!p.isCollection;
+      if (mainTab === 'collections' && !isCol) return false;
+      if (mainTab === 'individual' && isCol) return false;
+
       const pCat = p.category_name_ar ? p.category_name_ar.trim() : '';
       const matchesCategory =
         activeCategory === 'الكل' || pCat === activeCategory;
@@ -39,9 +44,14 @@ function HomePage() {
         !query ||
         (p.title && p.title.toLowerCase().includes(query)) ||
         (pCat.toLowerCase().includes(query));
-      return matchesCategory && matchesSearch;
+        
+      // Only apply category filter on individual tab
+      if (mainTab === 'individual') {
+        return matchesCategory && matchesSearch;
+      }
+      return matchesSearch;
     });
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, mainTab]);
 
   return (
     <div style={{ paddingBottom: '4rem' }}>
@@ -67,6 +77,21 @@ function HomePage() {
       {/* ── Products Section ──────────────────────────────────────── */}
       <div style={{ padding: '2.5rem 0' }}>
         <Container fluid="xl">
+          
+          {/* Tabs: Individual vs Collections */}
+          <Nav variant="pills" className="justify-content-center mb-4 tabs-metallic" onSelect={(k) => setMainTab(k)}>
+            <Nav.Item>
+              <Nav.Link eventKey="individual" active={mainTab === 'individual'} className="fw-bold fs-5 px-4 rounded-pill">
+                استيكرات فردية
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="collections" active={mainTab === 'collections'} className="fw-bold fs-5 px-4 mx-2 rounded-pill">
+                كوليكشنات
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+
           {/* Search bar */}
           <InputGroup className="search-bar mb-4">
             <InputGroup.Text className="search-icon">
@@ -81,25 +106,27 @@ function HomePage() {
             />
           </InputGroup>
 
-          {/* Category filter pills — horizontal scroll, no wrap */}
-          <div className="category-container">
-            {categories.map(function (cat) {
-              return (
-                <button
-                  key={cat}
-                  className={'btn-filter' + (activeCategory === cat ? ' active' : '')}
-                  onClick={function () { setActiveCategory(cat); }}
-                >
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
+          {/* Category filter pills — only show if on individual tab */}
+          {mainTab === 'individual' && (
+            <div className="category-container">
+              {categories.map(function (cat) {
+                return (
+                  <button
+                    key={cat}
+                    className={'btn-filter' + (activeCategory === cat ? ' active' : '')}
+                    onClick={function () { setActiveCategory(cat); }}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Result count */}
           <p className="filter-count">
-            {filteredProducts.length} استيكر
-            {activeCategory !== 'الكل' && <> في "{activeCategory}"</>}
+            {filteredProducts.length} {mainTab === 'collections' ? 'كوليكشن' : 'استيكر'}
+            {mainTab === 'individual' && activeCategory !== 'الكل' && <> في "{activeCategory}"</>}
             {searchQuery && <> · نتائج "{searchQuery}"</>}
           </p>
 

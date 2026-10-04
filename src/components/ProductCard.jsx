@@ -49,7 +49,9 @@ function ProductCard({ product }) {
 
       {/* Footer: price + add button */}
       <div className="product-card-footer d-flex justify-content-between align-items-center gap-2">
-        <span className="product-price text-nowrap fs-5 fw-bold text-metallic">10 جنيه</span>
+        <span className="product-price text-nowrap fs-5 fw-bold text-metallic">
+          {product.isCollection ? product.price : 10} جنيه
+        </span>
 
         {isInCart ? (
           <button className="btn-in-cart w-100 flex-grow-1">

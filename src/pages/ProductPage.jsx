@@ -108,11 +108,11 @@ function ProductPage() {
             <h1 className="product-detail-title text-metallic fs-1">{product.title}</h1>
 
             {/* ID */}
-            <p className="product-detail-id">رقم الاستيكر: #{product.id}</p>
+            <p className="product-detail-id">رقم المنتج: #{product.id}</p>
 
             {/* Price */}
             <div className="product-detail-price">
-              <span className="price-amount">10</span>
+              <span className="price-amount">{product.isCollection ? product.price : 10}</span>
               <span className="price-currency">جنيه</span>
             </div>
 
@@ -135,7 +135,7 @@ function ProductPage() {
                 </button>
               </div>
               <span className="product-qty-total ms-4">
-                = {qty * 10} جنيه
+                = {qty * (product.isCollection ? product.price : 10)} جنيه
               </span>
             </div>
 
