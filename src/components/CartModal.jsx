@@ -40,6 +40,8 @@ function CartModal({ show, onHide }) {
                 src={'/stickers/' + item.product.relative_path}
                 alt={item.product.title}
                 className="cart-item-img protected-img"
+                loading="lazy"
+                decoding="async"
                 draggable="false"
                 onContextMenu={(e) => e.preventDefault()}
                 onError={function (e) { e.target.style.display = 'none'; }}

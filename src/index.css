@@ -1434,3 +1434,21 @@ body {
   border-bottom-left-radius: 24px !important;
   border-bottom-right-radius: 24px !important;
 }
+
+/* Image Loading Skeleton */
+@keyframes pulse-skeleton {
+  0% { background-color: rgba(255,255,255,0.05); }
+  50% { background-color: rgba(255,255,255,0.1); }
+  100% { background-color: rgba(255,255,255,0.05); }
+}
+.skeleton-box {
+  animation: pulse-skeleton 1.5s infinite ease-in-out;
+  border-radius: inherit;
+}
+.fade-in-image {
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+.fade-in-image.loaded {
+  opacity: 1;
+}

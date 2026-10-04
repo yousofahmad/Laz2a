@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaCartPlus, FaCheck } from 'react-icons/fa';
 import { useCart } from '../CartContext';
 
 function ProductCard({ product }) {
   const { cart, addToCart } = useCart();
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const cartItem = cart.find(function (item) {
     return item.product.id === product.id;
@@ -17,16 +18,19 @@ function ProductCard({ product }) {
     <div className="product-card">
       {/* Image — click navigates to product detail page */}
       <Link to={'/product/' + product.id} className="product-card-img-link">
-        <div className="product-card-img-wrap">
+        <div className={`product-card-img-wrap ${!imgLoaded ? 'skeleton-box' : ''}`}>
           <img
             src={imageSrc}
             alt={product.title}
-            className="product-card-img protected-img"
+            className={`product-card-img protected-img fade-in-image ${imgLoaded ? 'loaded' : ''}`}
             loading="lazy"
+            decoding="async"
             draggable="false"
+            onLoad={() => setImgLoaded(true)}
             onContextMenu={(e) => e.preventDefault()}
             onError={function (e) {
               e.target.style.display = 'none';
+              setImgLoaded(true); // stop skeleton
               e.target.nextSibling && (e.target.nextSibling.style.display = 'flex');
             }}
           />

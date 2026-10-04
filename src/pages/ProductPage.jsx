@@ -28,6 +28,8 @@ function ProductPage() {
       .slice(0, 4);
   }, [product]);
 
+  const [imgLoaded, setImgLoaded] = useState(false);
+
   // Check cart state for this product
   const cartItem = cart.find(function (item) {
     return product && item.product.id === product.id;
@@ -79,15 +81,18 @@ function ProductPage() {
         <Row className="product-main-row g-4">
           {/* Image column — RIGHT in RTL */}
           <Col xs={12} md={6} className="product-image-col">
-            <div className="product-image-frame">
+            <div className={`product-image-frame ${!imgLoaded ? 'skeleton-box' : ''}`}>
               <img
                 src={'/stickers/' + product.relative_path}
                 alt={product.title}
-                className="product-detail-img protected-img"
+                className={`product-detail-img protected-img fade-in-image ${imgLoaded ? 'loaded' : ''}`}
                 draggable="false"
+                decoding="async"
+                onLoad={() => setImgLoaded(true)}
                 onContextMenu={(e) => e.preventDefault()}
                 onError={function (e) {
                   e.target.parentElement.classList.add('product-image-frame--empty');
+                  setImgLoaded(true);
                   e.target.style.display = 'none';
                 }}
               />
