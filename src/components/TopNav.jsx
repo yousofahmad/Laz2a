@@ -43,7 +43,7 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
         {/* Right side: brand name + WhatsApp */}
         <div className="navbar-actions-right">
           <Link to="/" className="navbar-brand-text text-metallic text-decoration-none d-none d-sm-inline">
-            لزقة | laz2a
+            لازقة | laz2a
           </Link>
           <a
             href={WHATSAPP_URL}

@@ -1364,11 +1364,42 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 16px;
   font-size: 1.05rem;
   color: var(--text-primary);
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 5px;
+}
+
+/* ============================================================
+   Global Smooth Border Radius for Modals, Menus, and Cards
+   ============================================================ */
+.modal-content,
+.cart-modal-content {
+  border-radius: 20px !important;
+  overflow: hidden; /* ensures inner elements follow the curve */
+}
+
+.modal-header {
+  border-top-left-radius: 20px !important;
+  border-top-right-radius: 20px !important;
+}
+
+.modal-footer {
+  border-bottom-left-radius: 20px !important;
+  border-bottom-right-radius: 20px !important;
+}
+
+.card {
+  border-radius: 16px !important;
+}
+
+.form-control, .form-select {
+  border-radius: 12px !important;
+}
+
+.dropdown-menu {
+  border-radius: 12px !important;
 }
