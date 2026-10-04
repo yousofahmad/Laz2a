@@ -3,11 +3,10 @@ import {
   Container, Form, Button, Table, Alert,
   Spinner, Badge, Collapse,
 } from 'react-bootstrap';
-import { FaLock, FaUnlock, FaChevronDown, FaChevronUp, FaRedo, FaInbox } from 'react-icons/fa';
+import { FaLock, FaUnlock, FaChevronDown, FaChevronUp, FaRedo, FaInbox, FaSignOutAlt } from 'react-icons/fa';
 import { supabase } from '../supabaseClient';
 
-// ── Hardcoded admin passcode ─────────────────────────────────────────────────
-const ADMIN_PASSCODE = 'laz2a-admin';
+
 
 // ── Helper: format ISO date to readable Arabic-friendly string ───────────────
 function formatDate(isoString) {
@@ -121,23 +120,63 @@ function OrderRow({ order, index }) {
 
 // ── Main AdminPage ─────────────────────────────────────────────────────────────
 function AdminPage() {
-  const [passcode, setPasscode]   = useState('');
-  const [loggedIn, setLoggedIn]   = useState(false);
+  const [email, setEmail]         = useState('');
+  const [password, setPassword]   = useState('');
+  const [session, setSession]     = useState(null);
   const [loginError, setLoginError] = useState('');
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const [orders, setOrders]       = useState([]);
   const [loading, setLoading]     = useState(false);
   const [fetchError, setFetchError] = useState('');
 
-  // ── Login ──────────────────────────────────────────────────────────────────
+  // ── Setup Auth Session ─────────────────────────────────────────────────────
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setIsAuthLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Fetch orders when session is available
+  React.useEffect(() => {
+    if (session) {
+      fetchOrders();
+    }
+  }, [session]);
+
+  // ── Login / Logout ─────────────────────────────────────────────────────────
   async function handleLogin(e) {
     e.preventDefault();
-    if (passcode !== ADMIN_PASSCODE) {
-      setLoginError('كلمة السر غلط. حاول تاني.');
+    setLoginError('');
+    setIsAuthLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setLoginError('فشل الدخول: البريد الإلكتروني أو كلمة السر غير صحيحة.');
+      setIsAuthLoading(false);
       return;
     }
-    setLoggedIn(true);
-    fetchOrders();
+    
+    // Auth state change will handle the session
+    setIsAuthLoading(false);
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setOrders([]);
   }
 
   // ── Fetch orders from Supabase ─────────────────────────────────────────────
@@ -161,15 +200,23 @@ function AdminPage() {
     setOrders(data || []);
   }
 
+  if (isAuthLoading && !session) {
+    return (
+      <div style={{ textAlign: 'center', padding: '5rem 0' }}>
+        <Spinner animation="border" style={{ color: 'var(--color-gold)' }} />
+      </div>
+    );
+  }
+
   // ── Login screen ───────────────────────────────────────────────────────────
-  if (!loggedIn) {
+  if (!session) {
     return (
       <div className="admin-login-page">
         <div className="admin-login-card">
           <FaLock style={{ fontSize: '2rem', color: 'var(--color-gold)', marginBottom: '1rem' }} />
           <h2 className="admin-login-title">لوحة التحكم</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-            ادخل كلمة السر للدخول
+            ادخل البريد الإلكتروني وكلمة السر للدخول
           </p>
 
           {loginError && (
@@ -179,19 +226,33 @@ function AdminPage() {
           <Form onSubmit={handleLogin}>
             <Form.Group className="mb-3">
               <Form.Control
-                type="password"
-                placeholder="كلمة السر"
+                type="email"
+                placeholder="البريد الإلكتروني"
                 className="form-ctrl"
-                value={passcode}
+                value={email}
                 onChange={function (e) {
-                  setPasscode(e.target.value);
+                  setEmail(e.target.value);
                   setLoginError('');
                 }}
                 autoFocus
+                required
               />
             </Form.Group>
-            <Button type="submit" className="btn-submit">
-              دخول
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="password"
+                placeholder="كلمة السر"
+                className="form-ctrl"
+                value={password}
+                onChange={function (e) {
+                  setPassword(e.target.value);
+                  setLoginError('');
+                }}
+                required
+              />
+            </Form.Group>
+            <Button type="submit" className="btn-submit" disabled={isAuthLoading}>
+              {isAuthLoading ? <Spinner size="sm" animation="border" /> : 'دخول'}
             </Button>
           </Form>
         </div>
@@ -214,14 +275,24 @@ function AdminPage() {
               {orders.length} طلب مسجل
             </p>
           </div>
-          <Button
-            className="btn-admin-refresh"
-            onClick={fetchOrders}
-            disabled={loading}
-          >
-            <FaRedo style={{ marginLeft: '6px' }} />
-            تحديث
-          </Button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <Button
+              className="btn-admin-refresh"
+              onClick={fetchOrders}
+              disabled={loading}
+            >
+              <FaRedo style={{ marginLeft: '6px' }} />
+              تحديث
+            </Button>
+            <Button
+              variant="outline-danger"
+              style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center' }}
+              onClick={handleLogout}
+            >
+              <FaSignOutAlt style={{ marginLeft: '6px' }} />
+              تسجيل خروج
+            </Button>
+          </div>
         </div>
 
         {/* Error */}
