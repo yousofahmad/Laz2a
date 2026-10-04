@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Container, Row, Col, InputGroup, Form, Nav } from 'react-bootstrap';
-import { FaWhatsapp, FaSearch } from 'react-icons/fa';
+import { FaWhatsapp, FaSearch, FaChevronDown } from 'react-icons/fa';
 import ProductCard from '../components/ProductCard';
 import catalog from '../data/catalog.json';
 
@@ -72,6 +72,10 @@ function HomePage() {
             استيكرات بريميوم بأفضل الأسعار وأعلى جودة
           </p>
         </Container>
+
+        <div className="scroll-indicator">
+          <FaChevronDown />
+        </div>
       </div>
 
       {/* ── Products Section ──────────────────────────────────────── */}

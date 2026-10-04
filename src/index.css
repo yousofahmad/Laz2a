@@ -691,12 +691,17 @@ body {
    Hero Section
    ============================================================ */
 .hero-section {
+  position: relative;
   background: radial-gradient(ellipse at 30% 50%, rgba(201, 168, 76, 0.1) 0%, transparent 65%),
               radial-gradient(ellipse at 80% 20%, rgba(30, 53, 96, 0.35) 0%, transparent 60%),
               var(--bg-page);
-  padding: 5rem 1rem 4.5rem;
+  padding: 2rem 1rem;
   text-align: center;
-  /* No border — blends seamlessly into the page background */
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .hero-title {
@@ -1000,9 +1005,14 @@ body {
 }
 
 .hero-logo {
-  height: 180px;
+  height: clamp(240px, 45vw, 360px);
   width: auto;
-  filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.35));
+  filter: drop-shadow(0 0 30px rgba(201, 168, 76, 0.45));
+  transition: transform 0.3s ease;
+}
+
+.hero-logo:hover {
+  transform: scale(1.05);
 }
 
 /* ============================================================
@@ -1478,4 +1488,28 @@ body {
 }
 .fade-in-image.loaded {
   opacity: 1;
+}
+
+/* Scroll Down Indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 2s infinite;
+  color: var(--color-gold);
+  font-size: 1.8rem;
+  opacity: 0.8;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0) translateX(-50%);
+  }
+  40% {
+    transform: translateY(-15px) translateX(-50%);
+  }
+  60% {
+    transform: translateY(-7px) translateX(-50%);
+  }
 }
