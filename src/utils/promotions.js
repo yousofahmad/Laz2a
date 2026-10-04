@@ -14,13 +14,13 @@
 const PRICE_PER_STICKER = 10;
 
 const TIERS = [
-  { minQty: 100, freeItems: 55 },
-  { minQty: 75,  freeItems: 35 },
-  { minQty: 50,  freeItems: 20 },
-  { minQty: 40,  freeItems: 15 },
-  { minQty: 30,  freeItems: 10 },
-  { minQty: 20,  freeItems: 5  },
-  { minQty: 10,  freeItems: 2  },
+  { minQty: 155, freeItems: 55 }, // Pay 100, get 55 free = 155 total
+  { minQty: 110, freeItems: 35 }, // Pay 75, get 35 free = 110 total
+  { minQty: 70,  freeItems: 20 }, // Pay 50, get 20 free = 70 total
+  { minQty: 55,  freeItems: 15 }, // Pay 40, get 15 free = 55 total
+  { minQty: 40,  freeItems: 10 }, // Pay 30, get 10 free = 40 total
+  { minQty: 25,  freeItems: 5  }, // Pay 20, get 5 free = 25 total
+  { minQty: 12,  freeItems: 2  }, // Pay 10, get 2 free = 12 total
 ];
 
 export function calculatePromo(totalQtyIgnored, cart = []) {
@@ -55,6 +55,7 @@ export function calculatePromo(totalQtyIgnored, cart = []) {
     subtotal, 
     finalTotal, 
     itemsToNextTier,
+    nextTier,
     individualQty
   };
 }

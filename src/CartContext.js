@@ -85,6 +85,7 @@ export function CartProvider({ children }) {
         freeItems:      promo.freeItems,
         packagesCount:  promo.packagesCount,
         itemsToNextTier: promo.itemsToNextTier,
+        nextTier:       promo.nextTier,
       }}
     >
       {children}

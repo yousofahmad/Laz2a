@@ -6,15 +6,11 @@ export default function OffersModal() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const seen = sessionStorage.getItem('laz2a_offers_seen');
-    if (!seen) {
-      // Small delay for better UX
-      const timer = setTimeout(() => {
-        setShow(true);
-        sessionStorage.setItem('laz2a_offers_seen', 'true');
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
+    // Small delay for better UX
+    const timer = setTimeout(() => {
+      setShow(true);
+    }, 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -32,13 +28,13 @@ export default function OffersModal() {
         </p>
         
         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <li className="offer-tier-item">🎁 اشتري <strong>10</strong> استيكرات + <strong>2 مجاناً</strong></li>
-          <li className="offer-tier-item">🎁 اشتري <strong>20</strong> استيكر + <strong>5 مجاناً</strong></li>
-          <li className="offer-tier-item">🎁 اشتري <strong>30</strong> استيكر + <strong>10 مجاناً</strong></li>
-          <li className="offer-tier-item">🎁 اشتري <strong>40</strong> استيكر + <strong>15 مجاناً</strong></li>
-          <li className="offer-tier-item">🎁 اشتري <strong>50</strong> استيكر + <strong>20 مجاناً</strong></li>
-          <li className="offer-tier-item" style={{ color: 'var(--color-gold)', fontSize: '1.2rem' }}>🔥 اشتري <strong>75</strong> استيكر + <strong>35 مجاناً</strong></li>
-          <li className="offer-tier-item" style={{ color: '#4CAF50', fontSize: '1.3rem', fontWeight: 900 }}>🚀 اشتري <strong>100</strong> استيكر + <strong>55 مجاناً!</strong></li>
+          <li className="offer-tier-item">🎁 حط <strong>12</strong> استيكر في السلة (ادفع تمن 10 وخد <strong>2 مجاناً</strong>)</li>
+          <li className="offer-tier-item">🎁 حط <strong>25</strong> استيكر في السلة (ادفع تمن 20 وخد <strong>5 مجاناً</strong>)</li>
+          <li className="offer-tier-item">🎁 حط <strong>40</strong> استيكر في السلة (ادفع تمن 30 وخد <strong>10 مجاناً</strong>)</li>
+          <li className="offer-tier-item">🎁 حط <strong>55</strong> استيكر في السلة (ادفع تمن 40 وخد <strong>15 مجاناً</strong>)</li>
+          <li className="offer-tier-item">🎁 حط <strong>70</strong> استيكر في السلة (ادفع تمن 50 وخد <strong>20 مجاناً</strong>)</li>
+          <li className="offer-tier-item" style={{ color: 'var(--color-gold)', fontSize: '1.2rem' }}>🔥 حط <strong>110</strong> استيكر في السلة (ادفع تمن 75 وخد <strong>35 مجاناً</strong>)</li>
+          <li className="offer-tier-item" style={{ color: '#4CAF50', fontSize: '1.3rem', fontWeight: 900 }}>🚀 حط <strong>155</strong> استيكر في السلة (ادفع تمن 100 وخد <strong>55 مجاناً!</strong>)</li>
         </ul>
 
         <div className="mt-4" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>

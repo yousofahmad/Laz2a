@@ -1403,3 +1403,17 @@ body {
 .dropdown-menu {
   border-radius: 12px !important;
 }
+
+/* Force round corners for Cart Modal specifically */
+.cart-modal-content {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+.cart-modal-header {
+  border-top-left-radius: 20px !important;
+  border-top-right-radius: 20px !important;
+}
+.cart-modal-footer {
+  border-bottom-left-radius: 20px !important;
+  border-bottom-right-radius: 20px !important;
+}

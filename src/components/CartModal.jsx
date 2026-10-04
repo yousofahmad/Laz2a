@@ -7,7 +7,7 @@ import { useCart } from '../CartContext';
 function CartModal({ show, onHide }) {
   const {
     cart, totalQuantity,
-    subtotal, discountAmount, finalTotal, freeItems, itemsToNextTier,
+    subtotal, discountAmount, finalTotal, freeItems, itemsToNextTier, nextTier,
     updateQuantity, removeFromCart,
   } = useCart();
   const navigate = useNavigate();
@@ -114,6 +114,13 @@ function CartModal({ show, onHide }) {
               <span className="cart-total-label">الإجمالي</span>
               <span className="cart-total-price">{finalTotal} جنيه</span>
             </div>
+
+            {/* Next Tier Nudge Alert */}
+            {itemsToNextTier && nextTier && itemsToNextTier <= 10 && (
+              <div className="next-tier-alert" style={{ color: 'var(--color-gold)', fontSize: '0.9rem', marginBottom: '10px', textAlign: 'center', backgroundColor: 'rgba(201, 168, 76, 0.1)', padding: '8px', borderRadius: '8px' }}>
+                ضيف <strong>{itemsToNextTier}</strong> استيكرات كمان وهتاخد <strong>{nextTier.freeItems}</strong> مجاناً!
+              </div>
+            )}
 
             {/* Free stickers alert */}
             {freeItems > 0 && (
