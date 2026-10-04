@@ -3,7 +3,7 @@
     "id": 9001,
     "title": "كوليكشن المبرمجين (15 استيكر)",
     "category_name_ar": "كوليكشنات",
-    "relative_path": "01_Programming_and_Developers/010.webp",
+    "relative_path": "Collections/programming_collection.webp",
     "isCollection": true,
     "price": 75
   },
@@ -11,7 +11,31 @@
     "id": 9002,
     "title": "كوليكشن الميمز والكوميكس (15 استيكر)",
     "category_name_ar": "كوليكشنات",
-    "relative_path": "03_Memes_and_Funny/020.webp",
+    "relative_path": "Collections/memes_collection.webp",
+    "isCollection": true,
+    "price": 75
+  },
+  {
+    "id": 9003,
+    "title": "كوليكشن التحفيز والشغل (15 استيكر)",
+    "category_name_ar": "كوليكشنات",
+    "relative_path": "Collections/motivation_collection.webp",
+    "isCollection": true,
+    "price": 75
+  },
+  {
+    "id": 9004,
+    "title": "كوليكشن الجيم والفورمة (15 استيكر)",
+    "category_name_ar": "كوليكشنات",
+    "relative_path": "Collections/gym_collection.webp",
+    "isCollection": true,
+    "price": 75
+  },
+  {
+    "id": 9005,
+    "title": "كوليكشن الأفلام والجيمينج (15 استيكر)",
+    "category_name_ar": "كوليكشنات",
+    "relative_path": "Collections/gaming_collection.webp",
     "isCollection": true,
     "price": 75
   },
