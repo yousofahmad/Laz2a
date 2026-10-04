@@ -28,6 +28,10 @@
   /* Accent */
   --accent:            var(--color-gold);
   --accent-hover:      var(--color-gold-light);
+
+  /* Skeleton Loading */
+  --skeleton-base:     rgba(255, 255, 255, 0.08);
+  --skeleton-shine:    rgba(255, 255, 255, 0.16);
 }
 
 /* Light Mode overrides — applied when body has class "light-mode" */
@@ -40,6 +44,10 @@ body.light-mode {
   --text-primary:      #0F1520;
   --text-secondary:    #3A5080;
   --text-muted:        #7A90B5;
+
+  /* Skeleton Loading */
+  --skeleton-base:     rgba(0, 0, 0, 0.06);
+  --skeleton-shine:    rgba(255, 255, 255, 0.6);
 }
 
 /* ============================================================
@@ -1435,16 +1443,35 @@ body {
   border-bottom-right-radius: 24px !important;
 }
 
-/* Image Loading Skeleton */
-@keyframes pulse-skeleton {
-  0% { background-color: rgba(255,255,255,0.05); }
-  50% { background-color: rgba(255,255,255,0.1); }
-  100% { background-color: rgba(255,255,255,0.05); }
-}
+/* Image Loading Skeleton (Shimmer Effect) */
 .skeleton-box {
-  animation: pulse-skeleton 1.5s infinite ease-in-out;
+  background-color: var(--skeleton-base);
+  position: relative;
+  overflow: hidden;
   border-radius: inherit;
 }
+
+.skeleton-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--skeleton-shine) 50%,
+    transparent 100%
+  );
+  transform: translateX(100%);
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(-100%); }
+}
+
 .fade-in-image {
   opacity: 0;
   transition: opacity 0.4s ease-in-out;
