@@ -6,6 +6,7 @@ import { CartProvider } from './CartContext';
 import TopNav       from './components/TopNav';
 import AnnouncementBar from './components/AnnouncementBar';
 import CartModal    from './components/CartModal';
+import ScrollToTop  from './components/ScrollToTop';
 import HomePage     from './pages/HomePage';
 import ProductPage  from './pages/ProductPage';
 import CheckoutPage from './pages/CheckoutPage';
@@ -39,6 +40,7 @@ function App() {
         onHide={function () { setCartOpen(false); }}
       />
 
+      <ScrollToTop />
       <Routes>
         <Route path="/"            element={<HomePage />} />
         <Route path="/product/:id" element={<ProductPage />} />

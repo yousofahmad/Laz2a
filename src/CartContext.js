@@ -1,10 +1,20 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { calculatePromo } from './utils/promotions';
 
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
-  const [cart, setCart] = useState([]); // Array of { product, quantity }
+  const [cart, setCart] = useState(function () {
+    const saved = localStorage.getItem('laz2a_cart');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { return []; }
+    }
+    return [];
+  }); // Array of { product, quantity }
+
+  useEffect(function () {
+    localStorage.setItem('laz2a_cart', JSON.stringify(cart));
+  }, [cart]);
 
   // Add a product to the cart (or increment quantity if already there)
   function addToCart(product) {

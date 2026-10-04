@@ -58,7 +58,7 @@ function HomePage() {
             />
           </div>
 
-          <p className="hero-subtitle text-metallic fw-bold" style={{ fontSize: '1.3rem', marginBottom: '0' }}>
+          <p className="hero-subtitle text-metallic fw-bold" style={{ fontSize: '1.3rem', marginBottom: '0', textAlign: 'center' }}>
             استيكرات بريميوم بأفضل الأسعار وأعلى جودة
           </p>
         </Container>
