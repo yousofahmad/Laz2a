@@ -51,7 +51,7 @@ function HomePage() {
           {/* Large centered logo */}
           <div className="hero-logo-wrap">
             <img
-              src="/logo.png"
+              src="/logo.webp"
               alt="laz2a"
               className="hero-logo"
               onError={function (e) { e.target.style.display = 'none'; }}

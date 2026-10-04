@@ -91,7 +91,6 @@ function CheckoutPage() {
       delivery_method: deliveryMethod,
       notes:           notes.trim(),
       total_amount:    finalTotal,
-      discount_amount: discountAmount,
       items:           cart.map(function (item) {
         return {
           id:       item.product.id,
@@ -212,8 +211,6 @@ function CheckoutPage() {
             <div className="free-stickers-alert" style={{ marginBottom: '1.25rem' }}>
               <FaGift style={{ marginLeft: '6px' }} />
               كسبت <strong>{freeItems} استيكر مجاناً!</strong>
-              <br />
-              اكتب IDs الاستيكرات اللي عايزها مجاناً في خانة الملاحظات.
             </div>
           )}
 

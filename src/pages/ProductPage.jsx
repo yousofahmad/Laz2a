@@ -83,7 +83,9 @@ function ProductPage() {
               <img
                 src={'/stickers/' + product.relative_path}
                 alt={product.title}
-                className="product-detail-img"
+                className="product-detail-img protected-img"
+                draggable="false"
+                onContextMenu={(e) => e.preventDefault()}
                 onError={function (e) {
                   e.target.parentElement.classList.add('product-image-frame--empty');
                   e.target.style.display = 'none';

@@ -33,7 +33,7 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
         {/* Center: Logo */}
         <Navbar.Brand as={Link} to="/" className="navbar-logo-wrap m-0">
           <img
-            src="/logo.png"
+            src="/logo.webp"
             alt="laz2a"
             className="navbar-logo"
             onError={function (e) { e.target.style.display = 'none'; }}

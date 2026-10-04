@@ -39,7 +39,9 @@ function CartModal({ show, onHide }) {
               <img
                 src={'/stickers/' + item.product.relative_path}
                 alt={item.product.title}
-                className="cart-item-img"
+                className="cart-item-img protected-img"
+                draggable="false"
+                onContextMenu={(e) => e.preventDefault()}
                 onError={function (e) { e.target.style.display = 'none'; }}
               />
 
@@ -118,7 +120,7 @@ function CartModal({ show, onHide }) {
             {/* Free stickers alert */}
             {freeItems > 0 && (
               <div className="free-stickers-alert">
-                <strong>{freeItems} استيكر مجاناً</strong> — اكتب IDs الاستيكرات المجانية في ملاحظات الطلب.
+                <strong>كسبت {freeItems} استيكر مجاناً!</strong>
               </div>
             )}
             

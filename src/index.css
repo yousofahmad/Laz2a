@@ -1329,3 +1329,12 @@ body {
     transform: translateY(0);
   }
 }
+
+/* ============================================================
+   Image Protection
+   ============================================================ */
+.protected-img {
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: auto;
+}

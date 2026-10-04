@@ -21,8 +21,10 @@ function ProductCard({ product }) {
           <img
             src={imageSrc}
             alt={product.title}
-            className="product-card-img"
+            className="product-card-img protected-img"
             loading="lazy"
+            draggable="false"
+            onContextMenu={(e) => e.preventDefault()}
             onError={function (e) {
               e.target.style.display = 'none';
               e.target.nextSibling && (e.target.nextSibling.style.display = 'flex');
