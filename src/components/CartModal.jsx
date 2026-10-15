@@ -1,12 +1,12 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { FaShoppingCart, FaTrash, FaTimes } from 'react-icons/fa';
+import { FaShoppingCart, FaTimes } from 'react-icons/fa';
 import { useCart } from '../CartContext';
 
 function CartModal({ show, onHide }) {
   const {
-    cart, totalQuantity,
+    cart,
     subtotal, discountAmount, finalTotal, freeItems, itemsToNextTier, nextTier,
     updateQuantity, removeFromCart,
   } = useCart();

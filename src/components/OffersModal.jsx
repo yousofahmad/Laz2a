@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { FaGift, FaTimes } from 'react-icons/fa';
+import { FaGift } from 'react-icons/fa';
 
 export default function OffersModal() {
   const [show, setShow] = useState(false);

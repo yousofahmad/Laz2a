@@ -1945,3 +1945,63 @@ body {
   .navbar-actions-left, .navbar-actions-right { gap: 0.4rem; }
   .navbar-actions-right .btn-whatsapp { padding-inline: 0.5rem !important; }
 }
+
+
+/* Database-validated coupon entry and discount summaries */
+.coupon-input-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.55rem;
+  direction: ltr;
+}
+
+.coupon-code-input {
+  min-width: 0;
+  text-align: left;
+  letter-spacing: 0.04em;
+}
+
+.coupon-apply-button {
+  flex: 0 0 auto;
+  min-width: 84px;
+  white-space: nowrap;
+  font-size: 0.88rem !important;
+}
+
+.coupon-message {
+  margin-top: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.coupon-message--success,
+.coupon-discount-summary,
+.coupon-success-line {
+  color: #4caf78 !important;
+  font-weight: 700;
+}
+
+.admin-coupon-section {
+  border-inline-start: 2px solid var(--admin-gold);
+  padding-inline-start: 0.75rem;
+}
+
+.admin-coupon-section p strong {
+  color: var(--admin-gold);
+}
+
+@media (max-width: 420px) {
+  .coupon-input-row {
+    gap: 0.4rem;
+  }
+
+  .coupon-apply-button {
+    min-width: 72px;
+    padding-inline: 0.7rem !important;
+  }
+}
+
+.coupon-message--error {
+  color: #e58c8c !important;
+}

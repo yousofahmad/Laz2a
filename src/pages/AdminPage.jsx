@@ -166,6 +166,12 @@ function OrderRow({ order }) {
                 <h3>المنتجات</h3>
                 {items.length ? <ul className="admin-items-list">{items.map((item, index) => <li key={`${item.id || 'item'}-${index}`}><span>{item.name || `منتج ${item.id || ''}`}</span><span>× {item.quantity || 1}</span><strong>{formatMoney(item.price)}</strong></li>)}</ul> : <p className="admin-empty-detail">لا توجد تفاصيل منتجات لهذا الطلب.</p>}
               </div>
+              {order.coupon_code && (
+                <div className="admin-detail-section admin-coupon-section">
+                  <h3>خصم الكوبون</h3>
+                  <p><strong>{order.coupon_code}</strong> — {order.coupon_percent}% (خصم {formatMoney(order.coupon_discount_amount)} جنيه)</p>
+                </div>
+              )}
               {order.address && <div className="admin-detail-section"><h3>العنوان</h3><p>{order.address}</p></div>}
               {order.notes && <div className="admin-detail-section"><h3>ملاحظات</h3><p>{order.notes}</p></div>}
             </div>

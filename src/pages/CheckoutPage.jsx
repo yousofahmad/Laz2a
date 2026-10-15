@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   FaUser, FaPhone, FaMapMarkerAlt,
   FaUniversity, FaTrain, FaStickyNote,
-  FaCheckCircle, FaShoppingCart, FaGift
+  FaCheckCircle, FaShoppingCart, FaGift, FaTag
 } from 'react-icons/fa';
 import { supabase } from '../supabaseClient';
 import { useCart } from '../CartContext';
@@ -68,9 +68,20 @@ function CheckoutPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submittedTotal, setSubmittedTotal] = useState(null);
   const [submittedFreeItems, setSubmittedFreeItems] = useState(0);
+  const [submittedOrder, setSubmittedOrder] = useState(null);
   const [error, setError]         = useState('');
+  const [couponCode, setCouponCode] = useState('');
+  const [couponPreview, setCouponPreview] = useState(null);
+  const [couponMessage, setCouponMessage] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
   const deliveryFee = deliveryMethod === 'metro_station' ? METRO_DELIVERY_FEE : 0;
-  const orderTotal = finalTotal + deliveryFee;
+  const orderTotal = couponPreview?.valid ? Number(couponPreview.total_amount) : finalTotal + deliveryFee;
+  const cartSignature = cart.map(function (item) { return `${item.product.id}:${item.quantity}`; }).join('|');
+
+  useEffect(function () {
+    setCouponPreview(null);
+    setCouponMessage('');
+  }, [cartSignature, deliveryMethod]);
 
   // Auto-redirect to home 3 seconds after successful order
   useEffect(function () {
@@ -81,6 +92,54 @@ function CheckoutPage() {
     return function () { clearTimeout(timer); };
   }, [submitted, navigate]);
 
+  // ── Coupon preview ──────────────────────────────────────────────────────────
+  async function applyCoupon() {
+    setError('');
+    if (!couponCode.trim()) {
+      setCouponPreview(null);
+      setCouponMessage('اكتب كود الكوبون أولاً.');
+      return;
+    }
+    if (!supabase) {
+      setCouponPreview(null);
+      setCouponMessage('خدمة الكوبونات غير مهيأة حالياً.');
+      return;
+    }
+    if (deliveryMethod === 'metro_station' && !metroStation) {
+      setCouponPreview(null);
+      setCouponMessage('اختر محطة المترو أولاً لحساب الإجمالي بدقة.');
+      return;
+    }
+
+    setCouponLoading(true);
+    try {
+      const { data, error: couponError } = await supabase.rpc('preview_coupon', {
+        p_code: couponCode.trim(),
+        p_items: cart.map(function (item) { return { id: item.product.id, quantity: item.quantity }; }),
+        p_delivery_method: deliveryMethod,
+        p_metro_station: deliveryMethod === 'metro_station' ? metroStation : null,
+      });
+      if (couponError || !data) {
+        console.error('Coupon preview failed.');
+        setCouponPreview(null);
+        setCouponMessage('تعذر التحقق من الكوبون الآن. حاول مرة أخرى.');
+        return;
+      }
+      if (!data.valid) {
+        setCouponPreview(null);
+        setCouponMessage(data.message || 'الكوبون غير صالح أو انتهى عدد استخداماته.');
+        return;
+      }
+      setCouponPreview(data);
+      setCouponMessage(data.message || 'تم تطبيق الكوبون بنجاح.');
+    } catch (_couponError) {
+      setCouponPreview(null);
+      setCouponMessage('تعذر الاتصال بخدمة الكوبونات. حاول مرة أخرى.');
+    } finally {
+      setCouponLoading(false);
+    }
+  }
+
   // ── Validation ─────────────────────────────────────────────────────────────
   function validate() {
     if (!name.trim())  return 'من فضلك ادخل اسمك.';
@@ -90,6 +149,8 @@ function CheckoutPage() {
     if (cart.length === 0) return 'السلة فارغة!';
     if (deliveryMethod === 'metro_station' && !metroStation)
       return 'من فضلك اختر أقرب محطة مترو لك.';
+    if (couponCode.trim() && !couponPreview?.valid)
+      return 'اضغط على «تطبيق الكوبون» وتأكد من صلاحيته قبل تأكيد الطلب.';
     return null;
   }
 
@@ -108,38 +169,32 @@ function CheckoutPage() {
 
     setLoading(true);
 
-    // Build the Supabase payload
-    const payload = {
-      customer_name:   name.trim(),
-      phone:           phone.trim(),
-      address:         '',
-      delivery_method: deliveryMethod,
-      metro_station:   deliveryMethod === 'metro_station' ? metroStation : null,
-      notes:           notes.trim(),
-      total_amount:    orderTotal,
-      items:           cart.map(function (item) {
-        return {
-          id:       item.product.id,
-          name:     item.product.title,
-          quantity: item.quantity,
-          price:    item.product.isCollection ? item.product.price * item.quantity : item.quantity * 10,
-        };
-      }),
-    };
-
     try {
-      const { error: supabaseError } = await supabase
-        .from('orders')
-        .insert([payload]);
+      const { data: orderResult, error: supabaseError } = await supabase.rpc('submit_order', {
+        p_customer_name: name.trim(),
+        p_phone: phone.trim(),
+        p_delivery_method: deliveryMethod,
+        p_metro_station: deliveryMethod === 'metro_station' ? metroStation : null,
+        p_notes: notes.trim(),
+        p_items: cart.map(function (item) { return { id: item.product.id, quantity: item.quantity }; }),
+        p_coupon_code: couponPreview?.valid ? couponCode.trim() : null,
+      });
 
-      if (supabaseError) {
+      if (supabaseError || !orderResult?.order_id) {
         console.error('Order submission failed.');
+        if (supabaseError?.message?.includes('COUPON_INVALID')) {
+          setCouponPreview(null);
+          setCouponMessage('انتهى عدد استخدام الكوبون أو لم يعد صالحاً. جرّب كوداً آخر.');
+          setError('لم يتم تسجيل الطلب لأن الكوبون لم يعد متاحاً.');
+          return;
+        }
         setError('حصل خطأ أثناء تسجيل الطلب. حاول مرة أخرى بعد قليل.');
         return;
       }
 
-      setSubmittedTotal(orderTotal);
-      setSubmittedFreeItems(freeItems);
+      setSubmittedTotal(Number(orderResult.total_amount));
+      setSubmittedFreeItems(Number(orderResult.free_items) || 0);
+      setSubmittedOrder(orderResult);
       clearCart();
       setSubmitted(true);
     } catch (_submitError) {
@@ -177,7 +232,8 @@ function CheckoutPage() {
                 <strong>{selectedDelivery ? selectedDelivery.label : ''}</strong>
                 {deliveryMethod === 'metro_station' && <strong> — {metroStation}</strong>}
               </p>
-              {deliveryFee > 0 && <p className="success-text">رسوم الاستلام من المترو: {deliveryFee} جنيه</p>}
+              {Number(submittedOrder?.delivery_fee || 0) > 0 && <p className="success-text">رسوم الاستلام من المترو: {submittedOrder.delivery_fee} جنيه</p>}
+              {submittedOrder?.coupon_code && <p className="success-text coupon-success-line">كوبون {submittedOrder.coupon_code} ({submittedOrder.coupon_percent}%): خصم {submittedOrder.coupon_discount_amount} جنيه</p>}
               <p className="success-text">الإجمالي: {submittedTotal ?? orderTotal} جنيه</p>
 
               {submittedFreeItems > 0 && (
@@ -235,6 +291,11 @@ function CheckoutPage() {
                 خصم: -{discountAmount} جنيه
               </span>
             )}
+            {couponPreview?.valid && (
+              <span className="coupon-discount-summary">
+                خصم الكوبون ({couponPreview.coupon_percent}%): -{couponPreview.coupon_discount_amount} جنيه
+              </span>
+            )}
             {deliveryFee > 0 && (
               <span style={{ color: 'var(--text-secondary)' }}>
                 رسوم الاستلام من المترو: +{deliveryFee} جنيه
@@ -290,6 +351,38 @@ function CheckoutPage() {
                 style={{ direction: 'ltr', textAlign: 'left' }}
                 disabled={loading}
               />
+            </Form.Group>
+
+            {/* Coupon code is previewed by the database and revalidated atomically at order submission. */}
+            <Form.Group className="mb-3 coupon-form-group">
+              <Form.Label className="form-label-dark">
+                <FaTag className="label-icon" /> كود الخصم
+              </Form.Label>
+              <div className="coupon-input-row">
+                <Form.Control
+                  type="text"
+                  className="form-ctrl coupon-code-input"
+                  placeholder="اكتب الكوبون"
+                  value={couponCode}
+                  maxLength={32}
+                  autoComplete="off"
+                  dir="ltr"
+                  onChange={function (e) {
+                    setCouponCode(e.target.value);
+                    setCouponPreview(null);
+                    setCouponMessage('');
+                  }}
+                  disabled={loading || couponLoading}
+                />
+                <Button type="button" className="btn btn-metallic-gold coupon-apply-button" onClick={applyCoupon} disabled={loading || couponLoading}>
+                  {couponLoading ? 'جارٍ التحقق…' : 'تطبيق'}
+                </Button>
+              </div>
+              {couponMessage && (
+                <div className={'coupon-message' + (couponPreview?.valid ? ' coupon-message--success' : ' coupon-message--error')} role="status">
+                  {couponMessage}
+                </div>
+              )}
             </Form.Group>
 
             {/* Delivery Method */}
@@ -374,7 +467,7 @@ function CheckoutPage() {
             <Button
               type="submit"
               className="btn btn-metallic-gold w-100 py-3 fs-5"
-              disabled={loading}
+              disabled={loading || couponLoading}
             >
               {loading
                 ? 'جاري تسجيل الطلب...'

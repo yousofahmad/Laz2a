@@ -21,6 +21,10 @@ function ProductPage() {
   // Similar products: same category, excluding this one, max 4
   const similarProducts = useMemo(function () {
     if (!product) return [];
+    if (product.isCollection && Array.isArray(product.member_ids)) {
+      const includedIds = new Set(product.member_ids.map(String));
+      return catalog.filter(function (p) { return includedIds.has(String(p.id)); }).slice(0, 15);
+    }
     return catalog
       .filter(function (p) {
         return p.category_name_ar === product.category_name_ar && p.id !== product.id;
@@ -171,7 +175,9 @@ function ProductPage() {
         {/* ── Similar Products ──────────────────────────────────────── */}
         {similarProducts.length > 0 && (
           <div className="similar-section">
-            <h3 className="similar-title">منتجات مشابهة</h3>
+            <h3 className="similar-title">
+              {product.isCollection ? `محتويات المجموعة (${similarProducts.length})` : 'منتجات مشابهة'}
+            </h3>
             <Row className="g-3">
               {similarProducts.map(function (p) {
                 return (
