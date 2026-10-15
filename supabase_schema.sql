@@ -97,7 +97,7 @@ create policy "Only listed admins can read orders"
     where admin_users.user_id = (select auth.uid())
   ));
 
--- Remove direct sequence access too; orders are created only by place_order().
+-- Remove direct sequence access too; orders are created only by submit_order().
 do $$
 declare order_seq regclass;
 begin
