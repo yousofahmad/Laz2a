@@ -1,70 +1,37 @@
-# Getting Started with Create React App
+# Laz2a
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+متجر React للاستكرات، ولوحة إدارة خاصة لمتابعة الطلبات.
 
-## Available Scripts
+## التشغيل محلياً
 
-In the project directory, you can run:
+1. ثبّت الاعتماديات: `npm ci`
+2. انسخ `.env.example` إلى `.env.local` وضع إعدادات Supabase العامة للمشروع.
+3. شغّل `npm start`، أو أنشئ نسخة إنتاجية باستخدام `npm run build`.
 
-### `npm start`
+## متغيرات Supabase والنشر على Vercel
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+يقرأ التطبيق `REACT_APP_SUPABASE_URL` و`REACT_APP_SUPABASE_ANON_KEY` أثناء البناء. أضف هذين المتغيرين في إعدادات مشروع Vercel ثم أعد النشر. يمكن أن تكون قيمة المفتاح من نوع **publishable** أو المفتاح العام القديم **anon**.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+> متغيرات `REACT_APP_*` تُضمّن في ملفات JavaScript التي تصل إلى المتصفح. عنوان المشروع والمفتاح العام ليسا سراً؛ هذا المفتاح مصمم للاستخدام من الواجهة. لا تضع أبداً مفتاح `service_role` أو مفتاحاً سرياً أو كلمة مرور قاعدة البيانات في متغير يبدأ بـ `REACT_APP_` أو في أي ملف واجهة. الأسرار التي لا بد منها لخادم يجب أن تبقى في متغيرات خادم لا تُضمّن في المتصفح، وألا تُستخدم إلا من API/serverless function موثوق.
 
-### `npm test`
+ملفات `.env` المحلية وبيئة Vercel المحلية مستثناة من Git. ملف `.env.example` يحتوي أسماء المتغيرات وقيمًا شكلية فقط.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## تهيئة صلاحيات قاعدة البيانات
 
-### `npm run build`
+شغّل `supabase_schema.sql` في SQL Editor بمشروع Supabase. يتيح المخطط إدراج الطلبات من واجهة المتجر، لكنه لا يتيح قراءة الطلبات إلا للمستخدمين المسجلين في جدول `admin_users`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+لإضافة حساب إدارة:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. أنشئ الحساب من Supabase Authentication، واستخدم كلمة مرور قوية ومصادقة متعددة العوامل إن كانت متاحة.
+2. بعد إنشاء الحساب، شغّل استعلام إدراج العضوية المعلّق في نهاية `supabase_schema.sql` مع البريد الصحيح.
+3. راجع سياسات RLS في Supabase واحذف أي سياسة `SELECT` أوسع تمنح كل المستخدمين المسجلين أو `anon` حق قراءة `orders`. لا تمنح `anon` صلاحية قراءة الطلبات.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+تُدار عضويات الإدارة عبر SQL موثوق فقط؛ لا توجد سياسة في الواجهة تسمح للمستخدمين بإضافة أنفسهم إلى القائمة.
 
-### `npm run eject`
+## خيارات الاستلام
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+يتيح نموذج الدفع اختيار محطة من محطات الخطوط الثلاثة العاملة (89 محطة)، برسوم استلام قدرها 50 جنيهًا، أو اختيار أحد المواقع المستقلة: معاهد العبور، جامعة العبور، جامعة حلوان، أو جامعة عين شمس. تُحفظ المحطة المختارة في `metro_station` وتدخل رسوم المترو في `total_amount`. قائمة الخط الثالث مبنية على [بيانات الهيئة القومية للأنفاق](https://www.nat.gov.eg/LocationActivityAr.aspx?id=85).
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## استعادة كلمة المرور
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+صفحة الإدارة على `/admin` ترسل رابط الاستعادة إلى `/admin/reset-password`. أضف عنوان النشر الفعلي، مع المسار `/admin/reset-password`، إلى قائمة **Redirect URLs** في إعدادات Supabase Authentication. أضف كذلك رابط التطوير المحلي إذا احتجت اختباره. يجب أن تكون صفحة الموقع الأساسية وعناوين إعادة التوجيه مقيدة بالنطاقات التي تملكها.

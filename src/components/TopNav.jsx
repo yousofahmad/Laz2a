@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Container, Badge, Button } from 'react-bootstrap';
+import { Navbar, Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FaSun, FaMoon, FaShoppingCart, FaWhatsapp } from 'react-icons/fa';
 import { useCart } from '../CartContext';
@@ -49,11 +49,12 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-metallic-gold py-1 px-2 px-md-3"
-            title="Custom"
+            className="btn btn-metallic-gold btn-whatsapp py-1 px-2 px-md-3"
+            title="واتساب — اطلب تصميمًا خاصًا"
+            aria-label="واتساب — 0155 232 3060"
           >
             <FaWhatsapp style={{ fontSize: '1.2rem' }} />
-            <span className="btn-whatsapp-label d-none d-md-inline ms-1" style={{ letterSpacing: '0.5px' }}>Custom</span>
+            <span className="btn-whatsapp-label" dir="ltr">0155 232 3060</span>
           </a>
         </div>
 

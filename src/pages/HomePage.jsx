@@ -71,6 +71,12 @@ function HomePage() {
           <p className="hero-subtitle text-metallic fw-bold" style={{ fontSize: '1.3rem', marginBottom: '0', textAlign: 'center' }}>
             استيكرات بريميوم بأفضل الأسعار وأعلى جودة
           </p>
+          <div className="hero-custom-order">
+            <span>عندك تصميم خاص؟</span>
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="اطلب تصميم استيكر خاص عبر واتساب">
+              <FaWhatsapp aria-hidden="true" /> اطلبه على واتساب <strong dir="ltr">0155 232 3060</strong>
+            </a>
+          </div>
         </Container>
 
         <div className="scroll-indicator">
@@ -79,7 +85,7 @@ function HomePage() {
       </div>
 
       {/* ── Products Section ──────────────────────────────────────── */}
-      <div style={{ padding: '2.5rem 0' }}>
+      <div className="home-products-section">
         <Container fluid="xl">
           
           {/* Tabs: Individual vs Collections */}

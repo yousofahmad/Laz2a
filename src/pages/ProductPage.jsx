@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Container, Row, Col, Badge, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import { FaCartPlus, FaCheck, FaArrowRight, FaTag } from 'react-icons/fa';
 import { useCart } from '../CartContext';
 import ProductCard from '../components/ProductCard';
@@ -111,6 +111,8 @@ function ProductPage() {
 
             {/* Title */}
             <h1 className="product-detail-title text-metallic fs-1">{product.title}</h1>
+
+            {product.description_ar && <p className="product-detail-description">{product.description_ar}</p>}
 
             {/* ID */}
             <p className="product-detail-id">رقم المنتج: #{product.id}</p>

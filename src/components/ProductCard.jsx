@@ -48,7 +48,7 @@ function ProductCard({ product }) {
         <Link to={'/product/' + product.id} className="product-card-name-link">
           <p className="product-card-name">{product.title}</p>
         </Link>
-        <p className="product-card-desc">{product.category_name_ar}</p>
+        <p className="product-card-desc">{product.description_ar || product.category_name_ar}</p>
       </div>
 
       {/* Footer: price + add button */}

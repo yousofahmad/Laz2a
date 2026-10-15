@@ -4,40 +4,54 @@ import { useNavigate } from 'react-router-dom';
 import {
   FaUser, FaPhone, FaMapMarkerAlt,
   FaUniversity, FaTrain, FaStickyNote,
-  FaTruck, FaCheckCircle, FaShoppingCart, FaGift
+  FaCheckCircle, FaShoppingCart, FaGift
 } from 'react-icons/fa';
 import { supabase } from '../supabaseClient';
 import { useCart } from '../CartContext';
+import { CAIRO_METRO_LINES } from '../data/cairoMetroStations';
 
 // ── Delivery options ─────────────────────────────────────────────────────────
 const DELIVERY_OPTIONS = [
   {
-    value: 'ship_home',
-    label: 'شحن للمنزل',
-    sublabel: 'قريباً',
-    icon: <FaTruck />,
-    disabled: true,
-  },
-  {
-    value: 'obour_pickup',
-    label: 'استلام من معاهد العبور أو جامعة العبور',
-    icon: <FaUniversity />,
-    disabled: false,
-  },
-  {
-    value: 'metro_zaytoun',
-    label: 'استلام عند محطة مترو حدائق الزيتون',
+    value: 'metro_station',
+    label: 'أقرب محطة مترو',
+    description: 'اختر المحطة الأقرب إليك — ٥٠ جنيهًا',
+    sublabel: '+٥٠ جنيه',
     icon: <FaTrain />,
-    disabled: false,
+  },
+  {
+    value: 'obour_institutes',
+    label: 'معاهد العبور',
+    description: 'استلام من المعاهد',
+    icon: <FaUniversity />,
+  },
+  {
+    value: 'obour_university',
+    label: 'جامعة العبور',
+    description: 'استلام من الجامعة',
+    icon: <FaUniversity />,
+  },
+  {
+    value: 'helwan_university',
+    label: 'جامعة حلوان',
+    description: 'استلام من الجامعة',
+    icon: <FaUniversity />,
+  },
+  {
+    value: 'ain_shams_university',
+    label: 'جامعة عين شمس',
+    description: 'استلام من الجامعة',
+    icon: <FaUniversity />,
   },
 ];
 
-const DEFAULT_DELIVERY = 'obour_pickup';
+const DEFAULT_DELIVERY = 'obour_institutes';
+const METRO_DELIVERY_FEE = 50;
 
 // ── Component ────────────────────────────────────────────────────────────────
 function CheckoutPage() {
   const { 
-    cart, totalQuantity, clearCart, 
+    cart, clearCart,
     subtotal, discountAmount, finalTotal, freeItems
   } = useCart();
   const navigate = useNavigate();
@@ -45,14 +59,18 @@ function CheckoutPage() {
   // Form fields
   const [name, setName]                     = useState('');
   const [phone, setPhone]                   = useState('');
-  const [address, setAddress]               = useState('');
   const [notes, setNotes]                   = useState('');
   const [deliveryMethod, setDeliveryMethod] = useState(DEFAULT_DELIVERY);
+  const [metroStation, setMetroStation]     = useState('');
 
   // UI state
   const [loading, setLoading]     = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submittedTotal, setSubmittedTotal] = useState(null);
+  const [submittedFreeItems, setSubmittedFreeItems] = useState(0);
   const [error, setError]         = useState('');
+  const deliveryFee = deliveryMethod === 'metro_station' ? METRO_DELIVERY_FEE : 0;
+  const orderTotal = finalTotal + deliveryFee;
 
   // Auto-redirect to home 3 seconds after successful order
   useEffect(function () {
@@ -70,6 +88,8 @@ function CheckoutPage() {
     if (!/^01[0-9]{9}$/.test(phone.trim()))
       return 'ادخل رقم موبايل مصري صحيح (01XXXXXXXXX).';
     if (cart.length === 0) return 'السلة فارغة!';
+    if (deliveryMethod === 'metro_station' && !metroStation)
+      return 'من فضلك اختر أقرب محطة مترو لك.';
     return null;
   }
 
@@ -81,16 +101,22 @@ function CheckoutPage() {
     const validationError = validate();
     if (validationError) { setError(validationError); return; }
 
+    if (!supabase) {
+      setError('خدمة تسجيل الطلب غير مهيأة حالياً. حاول مرة أخرى لاحقاً.');
+      return;
+    }
+
     setLoading(true);
 
     // Build the Supabase payload
     const payload = {
       customer_name:   name.trim(),
       phone:           phone.trim(),
-      address:         address.trim(),
+      address:         '',
       delivery_method: deliveryMethod,
+      metro_station:   deliveryMethod === 'metro_station' ? metroStation : null,
       notes:           notes.trim(),
-      total_amount:    finalTotal,
+      total_amount:    orderTotal,
       items:           cart.map(function (item) {
         return {
           id:       item.product.id,
@@ -101,21 +127,26 @@ function CheckoutPage() {
       }),
     };
 
-    const { error: supabaseError } = await supabase
-      .from('orders')
-      .insert([payload]);
+    try {
+      const { error: supabaseError } = await supabase
+        .from('orders')
+        .insert([payload]);
 
-    setLoading(false);
+      if (supabaseError) {
+        console.error('Order submission failed.');
+        setError('حصل خطأ أثناء تسجيل الطلب. حاول مرة أخرى بعد قليل.');
+        return;
+      }
 
-    if (supabaseError) {
-      console.error('Supabase error:', supabaseError);
-      setError('حصل خطأ أثناء تسجيل الطلب: ' + supabaseError.message);
-      return;
+      setSubmittedTotal(orderTotal);
+      setSubmittedFreeItems(freeItems);
+      clearCart();
+      setSubmitted(true);
+    } catch (_submitError) {
+      setError('تعذر الاتصال بخدمة الطلبات. تحقق من الإنترنت وحاول مرة أخرى.');
+    } finally {
+      setLoading(false);
     }
-
-    // Success!
-    clearCart();
-    setSubmitted(true);
   }
 
   // ── Success screen ──────────────────────────────────────────────────────────
@@ -144,13 +175,16 @@ function CheckoutPage() {
               <p className="success-text">
                 طريقة الاستلام:{' '}
                 <strong>{selectedDelivery ? selectedDelivery.label : ''}</strong>
+                {deliveryMethod === 'metro_station' && <strong> — {metroStation}</strong>}
               </p>
+              {deliveryFee > 0 && <p className="success-text">رسوم الاستلام من المترو: {deliveryFee} جنيه</p>}
+              <p className="success-text">الإجمالي: {submittedTotal ?? orderTotal} جنيه</p>
 
-              {freeItems > 0 && (
+              {submittedFreeItems > 0 && (
                 <div className="free-stickers-alert">
                   <FaGift style={{ marginLeft: '5px' }} />
                   ما تنساش — عندك{' '}
-                  <strong>{freeItems} استيكر مجاناً!</strong>
+                  <strong>{submittedFreeItems} استيكر مجاناً!</strong>
                 </div>
               )}
 
@@ -201,8 +235,13 @@ function CheckoutPage() {
                 خصم: -{discountAmount} جنيه
               </span>
             )}
+            {deliveryFee > 0 && (
+              <span style={{ color: 'var(--text-secondary)' }}>
+                رسوم الاستلام من المترو: +{deliveryFee} جنيه
+              </span>
+            )}
             <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--color-gold)', marginTop: '5px' }}>
-              الإجمالي: {finalTotal} جنيه
+              الإجمالي: {orderTotal} جنيه
             </span>
           </div>
 
@@ -256,56 +295,63 @@ function CheckoutPage() {
             {/* Delivery Method */}
             <Form.Group className="mb-3">
               <Form.Label className="form-label-dark">
-                <FaMapMarkerAlt className="label-icon" /> طريقة الاستلام
+                <FaMapMarkerAlt className="label-icon" /> مكان الاستلام
               </Form.Label>
               <div className="delivery-options">
                 {DELIVERY_OPTIONS.map(function (option) {
                   return (
                     <label
                       key={option.value}
-                      className={
-                        'delivery-option' +
-                        (option.disabled ? ' delivery-option--disabled' : '') +
-                        (deliveryMethod === option.value ? ' delivery-option--selected' : '')
-                      }
+                        className={
+                          'delivery-option' +
+                          (deliveryMethod === option.value ? ' delivery-option--selected' : '')
+                        }
                     >
                       <input
                         type="radio"
                         name="deliveryMethod"
                         value={option.value}
                         checked={deliveryMethod === option.value}
-                        disabled={option.disabled || loading}
+                        disabled={loading}
                         onChange={function () {
-                          if (!option.disabled) setDeliveryMethod(option.value);
+                          setDeliveryMethod(option.value);
                         }}
                         style={{ marginLeft: '10px' }}
                       />
                       <span className="delivery-option-icon">{option.icon}</span>
-                      <span className="delivery-option-label">{option.label}</span>
-                      {option.sublabel && (
-                        <span className="delivery-soon-badge">{option.sublabel}</span>
-                      )}
+                      <span className="delivery-option-copy">
+                        <span className="delivery-option-label">{option.label}</span>
+                        <small className="delivery-option-description">{option.description}</small>
+                      </span>
+                      {option.sublabel && <span className="delivery-fee-badge">{option.sublabel}</span>}
                     </label>
                   );
                 })}
               </div>
             </Form.Group>
 
-            {/* Address — only for home delivery */}
-            {deliveryMethod === 'ship_home' && (
-              <Form.Group className="mb-3">
-                <Form.Label className="form-label-dark">
-                  <FaMapMarkerAlt className="label-icon" /> عنوان التوصيل
-                </Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="الشارع، المبنى، المدينة…"
-                  className="form-ctrl"
-                  value={address}
-                  onChange={function (e) { setAddress(e.target.value); }}
+            {deliveryMethod === 'metro_station' && (
+              <Form.Group className="mb-3 metro-station-field">
+                <Form.Label className="form-label-dark"><FaTrain className="label-icon" /> أقرب محطة مترو</Form.Label>
+                <Form.Select
+                  className="form-ctrl metro-station-select"
+                  value={metroStation}
+                  onChange={function (e) { setMetroStation(e.target.value); }}
                   disabled={loading}
-                />
+                  required
+                >
+                  <option value="">اختر المحطة الأقرب إليك</option>
+                  {CAIRO_METRO_LINES.map(function (line) {
+                    return (
+                      <optgroup key={line.name} label={line.name}>
+                        {line.stations.map(function (station) {
+                          const stationWithLine = `${station} — ${line.label}`;
+                          return <option key={`${line.name}-${station}`} value={stationWithLine}>{stationWithLine}</option>;
+                        })}
+                      </optgroup>
+                    );
+                  })}
+                </Form.Select>
               </Form.Group>
             )}
 
@@ -332,7 +378,7 @@ function CheckoutPage() {
             >
               {loading
                 ? 'جاري تسجيل الطلب...'
-                : `تأكيد الطلب — ${finalTotal} جنيه`
+                : `تأكيد الطلب — ${orderTotal} جنيه`
               }
             </Button>
           </Form>
