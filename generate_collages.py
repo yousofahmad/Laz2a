@@ -1,75 +1,80 @@
-﻿import os
+#!/usr/bin/env python3
+"""Generate deterministic collection cover collages from catalog member IDs."""
+import json
 import random
-from PIL import Image, ImageOps, ImageDraw
+from pathlib import Path
 
-def create_sticker_collage(input_dir, output_path, num_stickers=15, canvas_size=(1000, 1000)):
-    # Get all webp images in the directory
-    valid_extensions = ('.webp', '.png', '.jpg')
-    files = [f for f in os.listdir(input_dir) if f.lower().endswith(valid_extensions)]
-    
-    if len(files) < num_stickers:
-        num_stickers = len(files)
-        
-    selected_files = random.sample(files, num_stickers)
-    
-    # Create a transparent canvas
-    canvas = Image.new('RGBA', canvas_size, (0, 0, 0, 0))
-    
-    # Center and scatter parameters
-    center_x, center_y = canvas_size[0] // 2, canvas_size[1] // 2
-    max_radius = 350
-    
-    for i, file in enumerate(selected_files):
-        img_path = os.path.join(input_dir, file)
-        try:
-            with Image.open(img_path) as img:
-                img = img.convert('RGBA')
-                
-                # Resize sticker to roughly 300x300 while maintaining aspect ratio
-                img.thumbnail((350, 350), Image.Resampling.LANCZOS)
-                
-                # Random rotation -30 to 30 degrees
-                angle = random.randint(-30, 30)
-                img = img.rotate(angle, expand=True, resample=Image.Resampling.BICUBIC)
-                
-                # Position logic - distribute them around the center
-                # First one in the exact center, others scattered around
-                if i == 0:
-                    offset_x, offset_y = 0, 0
-                else:
-                    angle_rad = (i / float(num_stickers)) * 2 * 3.14159
-                    r = random.uniform(50, max_radius)
-                    offset_x = int(r * os.math.cos(angle_rad) if hasattr(os, 'math') else r * __import__('math').cos(angle_rad))
-                    offset_y = int(r * os.math.sin(angle_rad) if hasattr(os, 'math') else r * __import__('math').sin(angle_rad))
-                
-                paste_x = center_x + offset_x - (img.width // 2)
-                paste_y = center_y + offset_y - (img.height // 2)
-                
-                # Paste using alpha composite
-                canvas.alpha_composite(img, (paste_x, paste_y))
-        except Exception as e:
-            print(f"Error processing {file}: {e}")
-            
-    # Save the collage
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    canvas.save(output_path, 'WEBP', quality=90)
-    print(f"Created {output_path}")
+from PIL import Image
 
-categories = {
-    '01_Tech_and_Programming': 'programming_collection.webp',
-    '02_Arabic_Memes_and_Slang': 'memes_collection.webp',
-    '07_Motivation_and_Work': 'motivation_collection.webp',
-    '04_Gym_and_Fitness': 'gym_collection.webp',
-    '10_Movies_Series_and_Gaming': 'gaming_collection.webp'
-}
+ROOT = Path(__file__).resolve().parent
+CATALOG_PATH = ROOT / "src" / "data" / "catalog.json"
+STICKERS_DIR = ROOT / "public" / "stickers"
 
-base_dir = 'public/stickers'
-out_dir = 'public/stickers/Collections'
 
-for cat_folder, out_name in categories.items():
-    input_path = os.path.join(base_dir, cat_folder)
-    output_path = os.path.join(out_dir, out_name)
-    if os.path.exists(input_path):
-        create_sticker_collage(input_path, output_path)
-    else:
-        print(f"Category folder not found: {input_path}")
+def create_collection_collage(collection, products_by_id):
+    member_ids = collection.get("member_ids")
+    if not isinstance(member_ids, list) or not member_ids:
+        raise ValueError(f"Collection {collection.get('id')} has no member_ids")
+    if len(set(map(int, member_ids))) != len(member_ids):
+        raise ValueError(f"Collection {collection.get('id')} has duplicate member IDs")
+
+    canvas_size = 1000
+    columns = 4
+    cell_size = canvas_size // columns
+    rows = (len(member_ids) + columns - 1) // columns
+    canvas = Image.new("RGBA", (canvas_size, canvas_size), (0, 0, 0, 0))
+    rng = random.Random(int(collection["id"]))
+
+    for index, product_id in enumerate(member_ids):
+        product = products_by_id.get(int(product_id))
+        if product is None:
+            raise ValueError(
+                f"Collection {collection['id']} references missing product {product_id}"
+            )
+        image_path = STICKERS_DIR / product["relative_path"]
+        if not image_path.is_file():
+            raise FileNotFoundError(image_path)
+
+        with Image.open(image_path) as source:
+            sticker = source.convert("RGBA")
+        sticker.thumbnail((cell_size - 34, cell_size - 34), Image.Resampling.LANCZOS)
+        angle = rng.randint(-7, 7)
+        sticker = sticker.rotate(
+            angle, expand=True, resample=Image.Resampling.BICUBIC
+        )
+
+        row, column = divmod(index, columns)
+        cell_x = column * cell_size
+        cell_y = row * cell_size
+        jitter_x = rng.randint(-8, 8)
+        jitter_y = rng.randint(-8, 8)
+        x = cell_x + (cell_size - sticker.width) // 2 + jitter_x
+        y = cell_y + (cell_size - sticker.height) // 2 + jitter_y
+        canvas.alpha_composite(sticker, (x, y))
+
+    relative_path = collection.get("relative_path")
+    if not relative_path:
+        raise ValueError(f"Collection {collection.get('id')} has no relative_path")
+    output_path = STICKERS_DIR / relative_path
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(output_path, "WEBP", quality=90, method=6)
+    print(f"Created {output_path} from {len(member_ids)} selected stickers")
+
+
+def main():
+    catalog = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+    products_by_id = {
+        int(product["id"]): product
+        for product in catalog
+        if not product.get("isCollection")
+    }
+    collections = [product for product in catalog if product.get("isCollection")]
+    if not collections:
+        raise SystemExit("No collections found in catalog.json")
+
+    for collection in collections:
+        create_collection_collage(collection, products_by_id)
+
+
+if __name__ == "__main__":
+    main()

@@ -42,8 +42,10 @@ function HomePage() {
         activeCategory === 'الكل' || pCat === activeCategory;
       const matchesSearch =
         !query ||
-        (p.title && p.title.toLowerCase().includes(query)) ||
-        (pCat.toLowerCase().includes(query));
+        [p.title, p.title_original, p.description_ar, pCat]
+          .some(function (value) {
+            return value && value.toLowerCase().includes(query);
+          });
         
       // Only apply category filter on individual tab
       if (mainTab === 'individual') {
