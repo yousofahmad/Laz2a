@@ -1390,7 +1390,16 @@ body {
   text-align: center;
   line-height: 1.5;
 }
-
+.offers-modal-header {
+  gap: 0.75rem;
+}
+.offers-modal-header .offers-modal-close {
+  align-self: center;
+  flex-shrink: 0;
+  margin: 0 !important;
+  position: relative;
+  z-index: 1;
+}
 /* ============================================================
    Global Smooth Border Radius for Modals, Menus, and Cards
    ============================================================ */

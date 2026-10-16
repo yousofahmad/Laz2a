@@ -15,11 +15,16 @@ export default function OffersModal() {
 
   return (
     <Modal show={show} onHide={() => setShow(false)} centered contentClassName="border-metallic">
-      <Modal.Header className="cart-modal-header" style={{ borderBottom: '1px solid var(--border-color)' }}>
+      <Modal.Header className="cart-modal-header offers-modal-header" style={{ borderBottom: '1px solid var(--border-color)' }}>
         <Modal.Title style={{ color: 'var(--color-gold)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
           <FaGift /> عروض لازقة الجديدة!
         </Modal.Title>
-        <button className="btn-close btn-close-white" onClick={() => setShow(false)}></button>
+        <button
+          type="button"
+          className="btn-close btn-close-white offers-modal-close"
+          aria-label="إغلاق نافذة العروض"
+          onClick={() => setShow(false)}
+        />
       </Modal.Header>
       
       <Modal.Body style={{ padding: '1.5rem', textAlign: 'center' }}>

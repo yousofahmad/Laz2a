@@ -51,10 +51,10 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
             rel="noopener noreferrer"
             className="btn btn-metallic-gold btn-whatsapp py-1 px-2 px-md-3"
             title="واتساب — اطلب تصميمًا خاصًا"
-            aria-label="واتساب — 0155 232 3060"
+            aria-label="واتساب — اطلب تصميمًا خاصًا"
           >
             <FaWhatsapp style={{ fontSize: '1.2rem' }} />
-            <span className="btn-whatsapp-label" dir="ltr">0155 232 3060</span>
+            <span className="btn-whatsapp-label">تصميم خاص</span>
           </a>
         </div>
 
