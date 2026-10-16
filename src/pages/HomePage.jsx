@@ -10,7 +10,7 @@ const WHATSAPP_URL =
 function HomePage() {
   const [activeCategory, setActiveCategory] = useState('الكل');
   const [searchQuery, setSearchQuery]       = useState('');
-  const [mainTab, setMainTab]               = useState('individual'); // 'individual' or 'collections'
+  const [mainTab, setMainTab]               = useState('collections'); // 'individual' or 'collections'
 
   // Extract unique categories for individual stickers only
   const categories = useMemo(function () {
