@@ -1320,7 +1320,7 @@ body {
   padding: 8px 10px;
   font-weight: 800;
   font-size: 0.95rem;
-  z-index: 1060;
+  z-index: 1;
   position: relative;
   overflow: hidden;
 }
