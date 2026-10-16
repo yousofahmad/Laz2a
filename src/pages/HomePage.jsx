@@ -76,7 +76,7 @@ function HomePage() {
           <div className="hero-custom-order">
             <span>عندك تصميم خاص؟</span>
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="اطلب تصميم استيكر خاص عبر واتساب">
-              <FaWhatsapp aria-hidden="true" /> اطلبه على واتساب <strong dir="ltr">0155 232 3060</strong>
+              <FaWhatsapp aria-hidden="true" /> اطلبه على واتساب
             </a>
           </div>
         </Container>

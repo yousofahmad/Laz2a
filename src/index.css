@@ -1898,9 +1898,18 @@ body {
   color: var(--color-gold-light);
   font-weight: 800;
   text-decoration: none;
+  padding: 0.52rem 1rem;
+  border: 1.5px solid var(--color-gold);
+  border-radius: 999px;
+  background-color: rgba(201, 168, 76, 0.05);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
-.hero-custom-order a:hover { color: #f3dfa0; text-decoration: underline; }
-.hero-custom-order strong { padding: 0.16rem 0.48rem; color: #161a1f; background: var(--color-gold-light); border-radius: 6px; font-size: 0.84rem; }
+.hero-custom-order a:hover {
+  color: #161a1f;
+  background-color: var(--color-gold);
+  border-color: var(--color-gold);
+  box-shadow: 0 0 16px rgba(201, 168, 76, 0.28);
+}
 .home-products-section { padding: 1.8rem 0 3rem; }
 .product-detail-description { margin: 0.65rem 0 1rem; color: var(--text-secondary); font-size: 1rem; line-height: 1.8; }
 .delivery-option-copy { display: flex; flex: 1; flex-direction: column; gap: 0.2rem; }
@@ -1914,7 +1923,8 @@ body {
 
 @media (max-width: 576px) {
   .hero-section {
-    min-height: auto;
+    min-height: calc(100vh - 72px);
+    min-height: calc(100svh - 72px);
     padding: 1.2rem 0.75rem 1.35rem;
   }
   .hero-section > .container,
@@ -1923,7 +1933,6 @@ body {
   .hero-logo { height: clamp(148px, 43vw, 205px); max-width: min(80vw, 260px); }
   .hero-subtitle { margin-bottom: 0 !important; font-size: clamp(0.96rem, 4vw, 1.12rem) !important; line-height: 1.6; }
   .hero-custom-order { gap: 0.28rem 0.55rem; margin-top: 0.55rem; font-size: 0.79rem; }
-  .hero-custom-order strong { font-size: 0.77rem; }
   .scroll-indicator { display: none; }
   .home-products-section { padding: 0.85rem 0 2.2rem; }
   .home-products-section .tabs-metallic { margin-bottom: 0.85rem !important; }
