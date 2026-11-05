@@ -14,6 +14,9 @@ import {
   FaSignOutAlt,
   FaShoppingBag,
   FaWallet,
+  FaBoxOpen,
+  FaCheckCircle,
+  FaWhatsapp,
 } from 'react-icons/fa';
 import { isSupabaseConfigured, supabase } from '../supabaseClient';
 
@@ -29,6 +32,29 @@ function formatDate(value) {
 
 function formatMoney(value) {
   return `${new Intl.NumberFormat('ar-EG').format(Number(value) || 0)} جنيه`;
+}
+
+const ORDER_STATUS_LABELS = {
+  pending: 'بانتظار التأكيد',
+  ready: 'جاهز للاستلام',
+  delivered: 'تم التسليم',
+};
+
+function normalizeWhatsAppPhone(value) {
+  let digits = String(value || '').replace(/\D/g, '');
+  if (digits.startsWith('00')) digits = digits.slice(2);
+  if (digits.startsWith('20')) return digits;
+  if (digits.startsWith('0')) return `2${digits}`;
+  if (digits.length === 10) return `20${digits}`;
+  return digits;
+}
+
+function orderConfirmationUrl(order) {
+  const phone = normalizeWhatsAppPhone(order.phone);
+  if (!phone) return '';
+  const name = String(order.customer_name || '').trim() || 'عميلنا الكريم';
+  const message = `أهلاً ${name}، تم تأكيد طلبك رقم #${order.id} من Laz2a. هنتواصل معاك أول ما الطلب يجهز علشان نحدد معاد الاستلام. شكراً لطلبك.`;
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
 function deliveryLabel(method) {
@@ -143,9 +169,11 @@ function AdminLogin({ error, busy, onLogin, onRequestReset }) {
   );
 }
 
-function OrderRow({ order }) {
+function OrderRow({ order, onStatusChange, isStatusSaving }) {
   const [expanded, setExpanded] = useState(false);
   const items = Array.isArray(order.items) ? order.items : [];
+  const status = ORDER_STATUS_LABELS[order.status] ? order.status : 'pending';
+  const whatsappUrl = orderConfirmationUrl(order);
 
   return (
     <>
@@ -155,12 +183,13 @@ function OrderRow({ order }) {
         <td className="admin-customer-cell">{order.customer_name || '—'}</td>
         <td><a className="admin-phone" href={`tel:${order.phone || ''}`} dir="ltr">{order.phone || '—'}</a></td>
         <td><span className="admin-delivery-pill">{order.delivery_method === 'metro_station' && order.metro_station ? `مترو — ${order.metro_station}` : deliveryLabel(order.delivery_method)}</span></td>
+        <td><span className={`admin-order-status admin-order-status--${status}`}>{ORDER_STATUS_LABELS[status]}</span></td>
         <td><strong className="admin-order-total">{formatMoney(order.total_amount)}</strong></td>
         <td><button type="button" className="admin-details-button" aria-expanded={expanded} onClick={() => setExpanded((open) => !open)}>{expanded ? 'إخفاء' : 'التفاصيل'} {expanded ? <FaChevronUp /> : <FaChevronDown />}</button></td>
       </tr>
       {expanded && (
         <tr className="admin-expanded-row">
-          <td colSpan={7}>
+          <td colSpan={8}>
             <div className="admin-order-details">
               <div className="admin-detail-section">
                 <h3>المنتجات</h3>
@@ -174,6 +203,15 @@ function OrderRow({ order }) {
               )}
               {order.address && <div className="admin-detail-section"><h3>العنوان</h3><p>{order.address}</p></div>}
               {order.notes && <div className="admin-detail-section"><h3>ملاحظات</h3><p>{order.notes}</p></div>}
+            </div>
+            <div className="admin-order-workflow">
+              <div className="admin-workflow-status"><h3>متابعة الطلب</h3><span className={`admin-order-status admin-order-status--${status}`}>{ORDER_STATUS_LABELS[status]}</span></div>
+              <div className="admin-workflow-actions">
+                {whatsappUrl ? <a className="admin-workflow-button admin-whatsapp-button" href={whatsappUrl} target="_blank" rel="noopener noreferrer"><FaWhatsapp /> تأكيد الطلب عبر واتساب</a> : <button type="button" className="admin-workflow-button admin-whatsapp-button" disabled title="لا يوجد رقم هاتف مسجل لهذا الطلب"><FaWhatsapp /> لا يوجد رقم للتواصل</button>}
+                <button type="button" className="admin-workflow-button admin-ready-button" onClick={() => onStatusChange(order.id, 'ready')} disabled={isStatusSaving || status !== 'pending'}><FaBoxOpen /> جهزت الطلب</button>
+                <button type="button" className="admin-workflow-button admin-delivered-button" onClick={() => onStatusChange(order.id, 'delivered')} disabled={isStatusSaving || status !== 'ready'}><FaCheckCircle /> تم التسليم</button>
+              </div>
+              <p className="admin-workflow-note">زر واتساب يفتح الرسالة للمراجعة؛ لا تُرسل إلا بعد ضغطك على إرسال داخل واتساب.</p>
             </div>
           </td>
         </tr>
@@ -190,6 +228,7 @@ function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState('');
   const [query, setQuery] = useState('');
+  const [statusSavingIds, setStatusSavingIds] = useState([]);
 
   useEffect(() => {
     if (!supabase) {
@@ -235,6 +274,26 @@ function AdminPage() {
       setLoading(false);
     }
   }, []);
+
+  async function handleOrderStatusChange(orderId, status) {
+    if (!supabase || !['ready', 'delivered'].includes(status)) return;
+    const idKey = String(orderId);
+    setStatusSavingIds((current) => [...new Set([...current, idKey])]);
+    setFetchError('');
+    try {
+      const { data, error } = await supabase.from('orders').update({ status }).eq('id', orderId).select('id, status').single();
+      if (error || !data) {
+        console.error('Could not save order status.');
+        setFetchError('تعذر حفظ حالة الطلب. حاول تحديث الصفحة ثم أعد المحاولة.');
+        return;
+      }
+      setOrders((current) => current.map((order) => (String(order.id) === idKey ? { ...order, status: data.status } : order)));
+    } catch (_error) {
+      setFetchError('تعذر حفظ حالة الطلب بسبب مشكلة في الاتصال. حاول مرة أخرى.');
+    } finally {
+      setStatusSavingIds((current) => current.filter((id) => id !== idKey));
+    }
+  }
 
   useEffect(() => {
     if (session) fetchOrders();
@@ -318,7 +377,7 @@ function AdminPage() {
           <div className="admin-orders-heading"><div><h2>كل الطلبات</h2><p>{new Intl.NumberFormat('ar-EG').format(orders.length)} طلب مسجل</p></div><div className="admin-search-shell"><FaSearch /><Form.Control aria-label="ابحث بالاسم أو الهاتف أو رقم الطلب" placeholder="ابحث بالاسم أو الهاتف أو رقم الطلب" value={query} onChange={(event) => setQuery(event.target.value)} /></div></div>
           {fetchError && <Alert variant="danger" className="admin-alert" role="alert">{fetchError}</Alert>}
           {loading && orders.length === 0 ? <div className="admin-inline-loading"><Spinner animation="border" /><span>جارٍ تحميل الطلبات…</span></div> : filteredOrders.length === 0 ? <div className="admin-empty-state"><span><FaShoppingBag /></span><h3>{query ? 'لا توجد نتائج مطابقة' : 'لا توجد طلبات حتى الآن'}</h3><p>{query ? 'جرّب كلمة بحث أو رقم هاتف مختلفاً.' : 'ستظهر الطلبات الجديدة هنا بعد تسجيلها.'}</p></div> : (
-            <div className="admin-table-scroll"><Table responsive className="admin-orders-table"><thead><tr><th>رقم الطلب</th><th>التاريخ</th><th>العميل</th><th>الهاتف</th><th>الاستلام</th><th>الإجمالي</th><th aria-label="الإجراءات" /></tr></thead><tbody>{filteredOrders.map((order) => <OrderRow key={order.id} order={order} />)}</tbody></Table></div>
+            <div className="admin-table-scroll"><Table responsive className="admin-orders-table"><thead><tr><th>رقم الطلب</th><th>التاريخ</th><th>العميل</th><th>الهاتف</th><th>الاستلام</th><th>الحالة</th><th>الإجمالي</th><th aria-label="الإجراءات" /></tr></thead><tbody>{filteredOrders.map((order) => <OrderRow key={order.id} order={order} onStatusChange={handleOrderStatusChange} isStatusSaving={statusSavingIds.includes(String(order.id))} />)}</tbody></Table></div>
           )}
         </section>
         <footer className="admin-dashboard-footer"><FaShieldAlt /> بيانات الطلبات متاحة لحسابات الإدارة المصرّح بها فقط.</footer>

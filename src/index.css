@@ -1826,10 +1826,15 @@ body {
 .admin-search-shell .form-control { min-width: 0; padding: 0.5rem 0; color: var(--admin-text) !important; background: transparent !important; border: 0 !important; box-shadow: none !important; font-size: 0.82rem; text-align: right; }
 .admin-search-shell .form-control::placeholder { color: #718198; }
 .admin-table-scroll { width: 100%; overflow-x: auto; }
-.admin-orders-table { min-width: 850px; margin: 0; color: var(--admin-text) !important; border-color: var(--admin-border) !important; vertical-align: middle; }
-.admin-orders-table > :not(caption) > * > * { padding: 0.85rem 0.75rem; color: inherit; background-color: transparent; border-bottom-color: var(--admin-border); box-shadow: none; text-align: right; }
-.admin-orders-table thead th { color: #93a4ba !important; background: rgba(255,255,255,0.025) !important; font-size: 0.73rem; font-weight: 700; white-space: nowrap; }
-.admin-orders-table tbody tr.admin-order-row:hover { background: rgba(255,255,255,0.025); }
+.admin-orders-table { min-width: 1020px; margin: 0; color: var(--admin-text) !important; border-color: var(--admin-border) !important; border-collapse: separate; border-spacing: 0 0.45rem; vertical-align: middle; }
+.admin-orders-table > :not(caption) > * > * { padding: 0.85rem 0.75rem; color: inherit; background-color: transparent !important; border-bottom-color: var(--admin-border); box-shadow: none; text-align: right; }
+.admin-orders-table thead th { color: #aebbd0 !important; background: rgba(11,16,24,0.96) !important; border-top: 1px solid var(--admin-border); border-bottom: 1px solid var(--admin-border); font-size: 0.73rem; font-weight: 700; white-space: nowrap; }
+.admin-orders-table thead th:first-child { border-start-start-radius: 11px; border-end-start-radius: 11px; border-right: 1px solid var(--admin-border); }
+.admin-orders-table thead th:last-child { border-start-end-radius: 11px; border-end-end-radius: 11px; border-left: 1px solid var(--admin-border); }
+.admin-orders-table tbody tr.admin-order-row > td { background: rgba(28,41,59,0.96) !important; border-top: 1px solid var(--admin-border); border-bottom: 1px solid var(--admin-border); }
+.admin-orders-table tbody tr.admin-order-row > td:first-child { border-start-start-radius: 12px; border-end-start-radius: 12px; border-right: 1px solid var(--admin-border); }
+.admin-orders-table tbody tr.admin-order-row > td:last-child { border-start-end-radius: 12px; border-end-end-radius: 12px; border-left: 1px solid var(--admin-border); }
+.admin-orders-table tbody tr.admin-order-row:hover > td { background: #25364d !important; }
 .admin-order-id { color: var(--admin-subtle); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; }
 .admin-date-cell { color: #aab7c8 !important; font-size: 0.77rem; white-space: nowrap; }
 .admin-customer-cell { color: var(--admin-text) !important; font-weight: 700; }
@@ -1839,7 +1844,7 @@ body {
 .admin-order-total { color: var(--admin-gold); font-size: 0.83rem; white-space: nowrap; }
 .admin-details-button { display: inline-flex; align-items: center; gap: 0.42rem; padding: 0.45rem 0.65rem; color: #d4c080; background: rgba(215,180,93,0.07); border: 1px solid rgba(215,180,93,0.17); border-radius: 9px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; cursor: pointer; }
 .admin-details-button:hover { background: rgba(215,180,93,0.13); }
-.admin-expanded-row > td { background: rgba(8, 14, 21, 0.48) !important; }
+.admin-orders-table tbody tr.admin-expanded-row > td { background: rgba(8, 14, 21, 0.78) !important; border: 1px solid var(--admin-border); border-radius: 12px; }
 .admin-order-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; padding: 0.55rem 0.25rem; }
 .admin-detail-section h3 { color: var(--admin-gold); font-size: 0.77rem; font-weight: 800; margin: 0 0 0.55rem; }
 .admin-detail-section p, .admin-empty-detail { color: #b7c2d0; font-size: 0.82rem; line-height: 1.7; margin: 0; white-space: pre-wrap; }
@@ -2028,4 +2033,29 @@ body {
 
 .coupon-message--error {
   color: #e58c8c !important;
+}
+
+
+/* Clear order state and action controls in the admin's dark theme. */
+.admin-order-status { display: inline-flex; align-items: center; padding: 0.32em 0.62rem; border: 1px solid transparent; border-radius: 999px; font-size: 0.72rem; font-weight: 800; white-space: nowrap; }
+.admin-order-status--pending { color: #f0d991; background: rgba(215,180,93,0.12); border-color: rgba(215,180,93,0.28); }
+.admin-order-status--ready { color: #a8ebc9; background: rgba(92,193,144,0.12); border-color: rgba(92,193,144,0.28); }
+.admin-order-status--delivered { color: #b5d9f7; background: rgba(103,165,218,0.14); border-color: rgba(103,165,218,0.28); }
+.admin-order-workflow { display: grid; grid-template-columns: minmax(145px, 0.55fr) minmax(0, 1.45fr); align-items: center; gap: 0.55rem 1rem; margin-top: 0.85rem; padding: 0.85rem 0.25rem 0.15rem; border-top: 1px solid var(--admin-border); }
+.admin-workflow-status { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; }
+.admin-workflow-status h3 { margin: 0; color: var(--admin-muted); font-size: 0.76rem; font-weight: 700; }
+.admin-workflow-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.admin-workflow-button { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.48rem 0.72rem; color: #e0e8f2; background: rgba(255,255,255,0.045); border: 1px solid var(--admin-border); border-radius: 10px; font: inherit; font-size: 0.75rem; font-weight: 800; text-decoration: none; cursor: pointer; transition: background 160ms ease, border-color 160ms ease, transform 160ms ease; }
+.admin-workflow-button:hover:not(:disabled) { transform: translateY(-1px); background: rgba(255,255,255,0.09); }
+.admin-workflow-button:disabled { opacity: 0.52; cursor: not-allowed; }
+.admin-whatsapp-button { color: #a8ebc9; background: rgba(92,193,144,0.09); border-color: rgba(92,193,144,0.26); }
+.admin-whatsapp-button:hover:not(:disabled) { color: #c4f5db; background: rgba(92,193,144,0.16); }
+.admin-ready-button { color: #f0d991; background: rgba(215,180,93,0.09); border-color: rgba(215,180,93,0.26); }
+.admin-ready-button:hover:not(:disabled) { color: #ffebac; background: rgba(215,180,93,0.16); }
+.admin-delivered-button { color: #b5d9f7; background: rgba(103,165,218,0.1); border-color: rgba(103,165,218,0.28); }
+.admin-delivered-button:hover:not(:disabled) { color: #d0eaff; background: rgba(103,165,218,0.18); }
+.admin-workflow-note { grid-column: 1 / -1; margin: 0; color: var(--admin-muted); font-size: 0.73rem; line-height: 1.6; }
+@media (max-width: 780px) {
+  .admin-order-workflow { grid-template-columns: 1fr; }
+  .admin-workflow-note { grid-column: auto; }
 }
