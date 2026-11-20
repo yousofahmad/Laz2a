@@ -19,6 +19,20 @@ import {
   FaWhatsapp,
 } from 'react-icons/fa';
 import { isSupabaseConfigured, supabase } from '../supabaseClient';
+import productCatalog from '../data/catalog.json';
+
+const ORDER_PRODUCTS_BY_ID = new Map(productCatalog.map((product) => [String(product.id), product]));
+
+function getOrderItemImageCode(item) {
+  const productId = item?.product_id ?? item?.id ?? item?.productId;
+  const product = ORDER_PRODUCTS_BY_ID.get(String(productId));
+  if (!product) return '';
+
+  const variantImage = product.color_variants?.find((variant) => String(variant.value) === String(item?.variant))?.images?.[0];
+  const imagePath = variantImage || product.card_image || product.relative_path || product.images?.[0] || '';
+  const filename = String(imagePath).split('/').pop();
+  return filename ? filename.replace(/\.[^.]+$/, '') : '';
+}
 
 function formatDate(value) {
   if (!value) return '—';
@@ -193,7 +207,21 @@ function OrderRow({ order, onStatusChange, isStatusSaving }) {
             <div className="admin-order-details">
               <div className="admin-detail-section">
                 <h3>المنتجات</h3>
-                {items.length ? <ul className="admin-items-list">{items.map((item, index) => <li key={`${item.id || 'item'}-${index}`}><span>{item.name || `منتج ${item.id || ''}`}</span><span>× {item.quantity || 1}</span><strong>{formatMoney(item.price)}</strong></li>)}</ul> : <p className="admin-empty-detail">لا توجد تفاصيل منتجات لهذا الطلب.</p>}
+                {items.length ? <ul className="admin-items-list">{items.map((item, index) => {
+                  const imageCode = getOrderItemImageCode(item);
+                  const productId = item?.product_id ?? item?.id ?? item?.productId;
+                  const product = ORDER_PRODUCTS_BY_ID.get(String(productId));
+                  return (
+                    <li key={`${item.id || 'item'}-${index}`}>
+                      <span>
+                        <span>{item.name || product?.title || 'منتج'}</span>
+                        {imageCode && <small style={{ display: 'block', width: 'fit-content', marginTop: '0.2rem', color: '#d4c080', fontSize: '0.7rem', fontWeight: 700 }}>كود الصورة: <bdi dir="ltr">{imageCode}</bdi></small>}
+                      </span>
+                      <span>× {item.quantity || 1}</span>
+                      <strong>{formatMoney(item.price)}</strong>
+                    </li>
+                  );
+                })}</ul> : <p className="admin-empty-detail">لا توجد تفاصيل منتجات لهذا الطلب.</p>}
               </div>
               {order.coupon_code && (
                 <div className="admin-detail-section admin-coupon-section">
