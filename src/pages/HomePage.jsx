@@ -2,12 +2,16 @@ import React, { useState, useMemo } from 'react';
 import { Container, Row, Col, InputGroup, Form, Nav } from 'react-bootstrap';
 import { FaWhatsapp, FaSearch, FaChevronDown } from 'react-icons/fa';
 import ProductCard from '../components/ProductCard';
-import catalog from '../data/catalog.json';
+import VerifiedFeedbackCarousel from '../components/VerifiedFeedbackCarousel';
+import { useProductCatalog } from '../ProductCatalogContext';
+import { useLanguage, localizedCopy } from '../LanguageContext';
+import { localizedCategory, localizedProductTitle, localizedProductDescription } from '../utils/localization';
 
-const WHATSAPP_URL =
-  'https://wa.me/201552323060?text=أهلاً،%20عايز%20أطبع%20استيكرات%20مخصوص';
+const WHATSAPP_BUSINESS_PHONE = '201552323060';
 
 function HomePage() {
+  const { products: catalog } = useProductCatalog();
+  const { language } = useLanguage();
   const [activeCategory, setActiveCategory] = useState('الكل');
   const [searchQuery, setSearchQuery]       = useState('');
   const [mainTab, setMainTab]               = useState('individual'); // 'individual' or 'collections'
@@ -27,7 +31,7 @@ function HomePage() {
       }
     });
     return result;
-  }, []);
+  }, [catalog]);
 
   // Filter by tab, category AND search query
   const filteredProducts = useMemo(function () {
@@ -42,7 +46,15 @@ function HomePage() {
         activeCategory === 'الكل' || pCat === activeCategory;
       const matchesSearch =
         !query ||
-        [p.title, p.title_original, p.description_ar, pCat]
+        [
+          p.title,
+          p.title_original,
+          p.description_ar,
+          pCat,
+          localizedProductTitle(p, language),
+          localizedProductDescription(p, language),
+          localizedCategory(pCat, language),
+        ]
           .some(function (value) {
             return value && value.toLowerCase().includes(query);
           });
@@ -53,7 +65,14 @@ function HomePage() {
       }
       return matchesSearch;
     });
-  }, [activeCategory, searchQuery, mainTab]);
+  }, [activeCategory, searchQuery, mainTab, language, catalog]);
+
+  const whatsappMessage = localizedCopy(
+    language,
+    'Hello, I would like to print custom stickers',
+    'أهلاً، عايز أطبع استيكرات مخصوص'
+  );
+  const whatsappUrl = `https://wa.me/${WHATSAPP_BUSINESS_PHONE}?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div style={{ paddingBottom: '4rem' }}>
@@ -71,12 +90,12 @@ function HomePage() {
           </div>
 
           <p className="hero-subtitle text-metallic fw-bold" style={{ fontSize: '1.3rem', marginBottom: '0', textAlign: 'center' }}>
-            استيكرات بريميوم بأفضل الأسعار وأعلى جودة
+            {localizedCopy(language, 'Premium stickers at the best prices and highest quality', 'استيكرات بريميوم بأفضل الأسعار وأعلى جودة')}
           </p>
           <div className="hero-custom-order">
-            <span>عندك تصميم خاص؟</span>
-            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="اطلب تصميم استيكر خاص عبر واتساب">
-              <FaWhatsapp aria-hidden="true" /> اطلبه على واتساب
+            <span>{localizedCopy(language, 'Have a custom design?', 'عندك تصميم خاص؟')}</span>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label={localizedCopy(language, 'Order a custom sticker design via WhatsApp', 'اطلب تصميم استيكر خاص عبر واتساب')}>
+              <FaWhatsapp aria-hidden="true" /> {localizedCopy(language, 'Order it on WhatsApp', 'اطلبه على واتساب')}
             </a>
           </div>
         </Container>
@@ -86,6 +105,8 @@ function HomePage() {
         </div>
       </div>
 
+      <VerifiedFeedbackCarousel />
+
       {/* ── Products Section ──────────────────────────────────────── */}
       <div className="home-products-section">
         <Container fluid="xl">
@@ -94,12 +115,12 @@ function HomePage() {
           <Nav variant="pills" className="justify-content-center mb-4 tabs-metallic" onSelect={(k) => setMainTab(k)}>
             <Nav.Item>
               <Nav.Link eventKey="individual" active={mainTab === 'individual'} className="fw-bold fs-5 px-4 rounded-pill">
-                استيكرات فردية
+                {localizedCopy(language, 'Individual stickers', 'استيكرات فردية')}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
               <Nav.Link eventKey="collections" active={mainTab === 'collections'} className="fw-bold fs-5 px-4 mx-2 rounded-pill">
-                كوليكشنات
+                {localizedCopy(language, 'Collections', 'كوليكشنات')}
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -111,7 +132,7 @@ function HomePage() {
             </InputGroup.Text>
             <Form.Control
               type="text"
-              placeholder="ابحث عن استيكر..."
+              placeholder={localizedCopy(language, 'Search stickers...', 'ابحث عن استيكر...')}
               className="form-ctrl search-input"
               value={searchQuery}
               onChange={function (e) { setSearchQuery(e.target.value); }}
@@ -128,7 +149,7 @@ function HomePage() {
                     className={'btn-filter' + (activeCategory === cat ? ' active' : '')}
                     onClick={function () { setActiveCategory(cat); }}
                   >
-                    {cat}
+                    {localizedCategory(cat, language)}
                   </button>
                 );
               })}
@@ -137,9 +158,11 @@ function HomePage() {
 
           {/* Result count */}
           <p className="filter-count">
-            {filteredProducts.length} {mainTab === 'collections' ? 'كوليكشن' : 'استيكر'}
-            {mainTab === 'individual' && activeCategory !== 'الكل' && <> في "{activeCategory}"</>}
-            {searchQuery && <> · نتائج "{searchQuery}"</>}
+            {filteredProducts.length} {mainTab === 'collections'
+              ? localizedCopy(language, 'collection', 'كوليكشن')
+              : localizedCopy(language, 'sticker', 'استيكر')}
+            {mainTab === 'individual' && activeCategory !== 'الكل' && <> {localizedCopy(language, 'in', 'في')} "{localizedCategory(activeCategory, language)}"</>}
+            {searchQuery && <> · {localizedCopy(language, 'Results for', 'نتائج')} "{searchQuery}"</>}
           </p>
 
           {/* Products grid */}
@@ -156,7 +179,7 @@ function HomePage() {
           ) : (
             <div className="empty-search-state">
               <FaSearch style={{ fontSize: '2.5rem', color: 'var(--text-muted)', marginBottom: '1rem' }} />
-              <p>مفيش نتائج لـ "{searchQuery}"</p>
+              <p>{localizedCopy(language, 'No results for', 'مفيش نتائج لـ')} "{searchQuery}"</p>
             </div>
           )}
         </Container>

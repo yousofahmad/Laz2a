@@ -2,9 +2,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaCartPlus, FaCheck } from 'react-icons/fa';
 import { useCart } from '../CartContext';
+import { getProductCardImage } from '../utils/productImages';
+import { getProductDiscountPercent, getProductRegularPrice, getProductUnitPrice, isProductDiscountActive } from '../utils/productPricing';
+import { useLanguage, localizedCopy } from '../LanguageContext';
+import { localizedProductTitle, localizedProductDescription } from '../utils/localization';
 
 function ProductCard({ product }) {
   const { cart, addToCart } = useCart();
+  const { language } = useLanguage();
   const [imgLoaded, setImgLoaded] = useState(false);
 
   const cartItem = cart.find(function (item) {
@@ -12,7 +17,10 @@ function ProductCard({ product }) {
   });
   const isInCart = !!cartItem;
 
-  const imageSrc = '/stickers/' + product.relative_path;
+  const imageSrc = '/stickers/' + (getProductCardImage(product) || product.relative_path);
+  const productTitle = localizedProductTitle(product, language);
+  const productDescription = localizedProductDescription(product, language);
+  const hasDiscount = isProductDiscountActive(product);
 
   return (
     <div className="product-card">
@@ -21,7 +29,7 @@ function ProductCard({ product }) {
         <div className={`product-card-img-wrap ${!imgLoaded ? 'skeleton-box' : ''}`}>
           <img
             src={imageSrc}
-            alt={product.title}
+            alt={productTitle}
             className={`product-card-img protected-img fade-in-image ${imgLoaded ? 'loaded' : ''}`}
             loading="lazy"
             decoding="async"
@@ -46,21 +54,22 @@ function ProductCard({ product }) {
       <div className="product-card-body">
         <span className="product-card-id">#{product.id}</span>
         <Link to={'/product/' + product.id} className="product-card-name-link">
-          <p className="product-card-name">{product.title}</p>
+          <p className="product-card-name">{productTitle}</p>
         </Link>
-        <p className="product-card-desc">{product.description_ar || product.category_name_ar}</p>
+        <p className="product-card-desc">{productDescription}</p>
       </div>
 
       {/* Footer: price + add button */}
       <div className="product-card-footer d-flex justify-content-between align-items-center gap-2">
-        <span className="product-price text-nowrap fs-5 fw-bold text-metallic">
-          {product.isCollection ? product.price : 10} جنيه
+        <span className="product-price product-price-values text-nowrap fs-5 fw-bold text-metallic">
+          {hasDiscount && <><del className="product-price-old">{getProductRegularPrice(product)}</del><span className="product-discount-badge">-{getProductDiscountPercent(product)}%</span></>}
+          <span>{getProductUnitPrice(product)} {localizedCopy(language, 'EGP', 'جنيه')}</span>
         </span>
 
         {isInCart ? (
           <button className="btn-in-cart w-100 flex-grow-1">
             <FaCheck style={{ marginLeft: '5px' }} />
-            في السلة ({cartItem.quantity})
+            {localizedCopy(language, 'In cart', 'في السلة')} ({cartItem.quantity})
           </button>
         ) : (
           <button
@@ -71,7 +80,7 @@ function ProductCard({ product }) {
             }}
           >
             <FaCartPlus style={{ marginLeft: '5px' }} />
-            أضف
+            {localizedCopy(language, 'Add', 'أضف')}
           </button>
         )}
       </div>

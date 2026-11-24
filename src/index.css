@@ -1129,6 +1129,103 @@ body {
   display: block;
 }
 
+.product-gallery-thumbnails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+.product-gallery-thumb {
+  width: 88px;
+  height: 64px;
+  padding: 3px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  cursor: pointer;
+}
+.product-gallery-thumb--active {
+  border: 2px solid var(--color-gold);
+}
+.product-gallery-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.product-variant-picker {
+  min-width: 0;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: 0;
+}
+.product-variant-label {
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.product-variant-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.product-variant-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 106px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.product-variant-option:hover,
+.product-variant-option--active {
+  border-color: var(--color-gold);
+}
+.product-variant-option--active {
+  box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.16);
+}
+.product-variant-swatch {
+  width: 19px;
+  height: 19px;
+  border: 1px solid rgba(128, 128, 128, 0.6);
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.product-variant-swatch--white { background: #fff; }
+.product-variant-swatch--black { background: #111; }
+.product-variant-note {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+.cart-item-variant {
+  color: var(--color-gold);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.checkout-variant-summary {
+  display: grid;
+  gap: 5px;
+  margin: 0 0 1rem;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+}
+.checkout-variant-summary strong {
+  color: var(--text-primary);
+}
+
 /* Details column */
 .product-cat-badge {
   background: rgba(201,168,76,0.15) !important;

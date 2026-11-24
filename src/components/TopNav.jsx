@@ -3,12 +3,17 @@ import { Navbar, Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FaSun, FaMoon, FaShoppingCart, FaWhatsapp } from 'react-icons/fa';
 import { useCart } from '../CartContext';
-
-const WHATSAPP_URL =
-  'https://wa.me/201552323060?text=أهلاً،%20عايز%20أطبع%20استيكرات%20مخصوص';
+import { localizedCopy, useLanguage } from '../LanguageContext';
 
 function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
   const { totalQuantity } = useCart();
+  const { language, setLanguage } = useLanguage();
+  const t = (english, arabic) => localizedCopy(language, english, arabic);
+  const whatsappMessage = t(
+    'Hello, I want to print custom stickers',
+    'أهلاً، عايز أطبع استيكرات مخصوص',
+  );
+  const whatsappUrl = `https://wa.me/201552323060?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <Navbar className="app-navbar py-2 py-md-3" expand={false} sticky="top">
@@ -16,7 +21,12 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
 
         {/* Left side: cart + theme toggle */}
         <div className="navbar-actions-left">
-          <Button className="btn-cart position-relative" onClick={onOpenCart}>
+          <Button
+            className="btn-cart position-relative"
+            onClick={onOpenCart}
+            title={t('Shopping cart', 'سلة المشتريات')}
+            aria-label={t('Shopping cart', 'سلة المشتريات')}
+          >
             <FaShoppingCart />
             {totalQuantity > 0 && (
               <span className="cart-badge badge rounded-pill position-absolute top-0 start-100 translate-middle">
@@ -25,8 +35,24 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
             )}
           </Button>
 
-          <button className="btn-theme-toggle" onClick={onToggleTheme}>
+          <button
+            type="button"
+            className="btn-theme-toggle"
+            onClick={onToggleTheme}
+            title={t('Toggle dark mode', 'تبديل الوضع الداكن')}
+            aria-label={t('Toggle dark mode', 'تبديل الوضع الداكن')}
+          >
             {isDarkMode ? <FaSun /> : <FaMoon />}
+          </button>
+
+          <button
+            type="button"
+            className="btn-language-toggle"
+            onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+            title={t('Switch to Arabic', 'التبديل إلى الإنجليزية')}
+            aria-label={t('Switch to Arabic', 'التبديل إلى الإنجليزية')}
+          >
+            {language === 'en' ? 'عربي' : 'EN'}
           </button>
         </div>
 
@@ -46,15 +72,15 @@ function TopNav({ isDarkMode, onToggleTheme, onOpenCart }) {
             لازقة | laz2a
           </Link>
           <a
-            href={WHATSAPP_URL}
+            href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-metallic-gold btn-whatsapp py-1 px-2 px-md-3"
-            title="واتساب — اطلب تصميمًا خاصًا"
-            aria-label="واتساب — اطلب تصميمًا خاصًا"
+            title={t('WhatsApp — request a custom design', 'واتساب — اطلب تصميمًا خاصًا')}
+            aria-label={t('WhatsApp — request a custom design', 'واتساب — اطلب تصميمًا خاصًا')}
           >
             <FaWhatsapp style={{ fontSize: '1.2rem' }} />
-            <span className="btn-whatsapp-label">تصميم خاص</span>
+            <span className="btn-whatsapp-label">{t('Custom design', 'تصميم خاص')}</span>
           </a>
         </div>
 

@@ -10294,5 +10294,50 @@
       "تصوير",
       "كاميرا"
     ]
+  },
+  {
+    "id": 601,
+    "filename": "mousepad-pushers-two-piece-set.png",
+    "category_folder": "01_Tech_and_Programming",
+    "category_name_ar": "أدوات وأنظمة تقنية",
+    "title": "دافعين الماوس باد",
+    "original_filename": "Laz2a Mousepad Pushers — two-piece set",
+    "relative_path": "Custom/Mousepad-Pushers/pair-two-tone.png",
+    "card_image": "Custom/Mousepad-Pushers/pair-two-tone.png",
+    "images": [
+      "Custom/Mousepad-Pushers/pair-white.png",
+      "Custom/Mousepad-Pushers/pair-black.png"
+    ],
+    "variant_default": "white",
+    "color_variants": [
+      {
+        "value": "white",
+        "label_ar": "أبيض",
+        "label_en": "White",
+        "images": [
+          "Custom/Mousepad-Pushers/pair-white.png",
+          "Custom/Mousepad-Pushers/laptop-white-mockup-focused.jpg"
+        ]
+      },
+      {
+        "value": "black",
+        "label_ar": "أسود",
+        "label_en": "Black",
+        "images": [
+          "Custom/Mousepad-Pushers/pair-black.png",
+          "Custom/Mousepad-Pushers/laptop-black-mockup-focused.jpg"
+        ]
+      }
+    ],
+    "price": 15,
+    "sticker_count": 2,
+    "title_original": "Mousepad Pushers (Two-Piece Set)",
+    "description_ar": "طقم من قطعتين برسمة دافعي الماوس باد، اختار اللون الأبيض أو الأسود. السعر للطقم كله.",
+    "tags_ar": [
+      "ماوس باد",
+      "طقم من قطعتين",
+      "أبيض وأسود",
+      "مكتب الكمبيوتر"
+    ]
   }
 ]

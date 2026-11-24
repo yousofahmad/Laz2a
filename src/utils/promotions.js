@@ -11,6 +11,8 @@
  *   Buy 10  → get 2 free
  */
 
+import { getProductUnitPrice } from './productPricing';
+
 const PRICE_PER_STICKER = 10;
 
 const TIERS = [
@@ -25,13 +27,15 @@ const TIERS = [
 
 export function calculatePromo(totalQtyIgnored, cart = []) {
   let individualQty = 0;
+  let individualBasePrice = 0;
   let collectionsTotal = 0;
 
   cart.forEach(function(item) {
     if (item.product.isCollection) {
-      collectionsTotal += (item.product.price || 75) * item.quantity;
+      collectionsTotal += getProductUnitPrice(item.product) * item.quantity;
     } else {
       individualQty += item.quantity;
+      individualBasePrice += getProductUnitPrice(item.product) * item.quantity;
     }
   });
 
@@ -39,7 +43,6 @@ export function calculatePromo(totalQtyIgnored, cart = []) {
   const freeItems = tier ? tier.freeItems : 0;
   
   const individualDiscount = freeItems * PRICE_PER_STICKER;
-  const individualBasePrice = individualQty * PRICE_PER_STICKER;
   const individualFinalPrice = individualBasePrice - individualDiscount;
 
   const finalTotal = individualFinalPrice + collectionsTotal;

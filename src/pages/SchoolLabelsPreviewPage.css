@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap');
+
+.school-labels-preview-page {
+  min-height: calc(100vh - 130px);
+  padding: 2rem 0 3rem;
+  color: var(--text-primary);
+}
+.school-labels-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.35rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 700;
+}
+.school-labels-back-link:hover { color: var(--color-gold-light); }
+.school-labels-hero { max-width: 760px; margin: 0 auto 1.75rem; text-align: center; }
+.school-labels-eyebrow { color: var(--color-gold); font-size: 0.72rem; letter-spacing: 0.15em; font-weight: 800; }
+.school-labels-hero h1 { margin: 0.3rem 0 0.55rem; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; }
+.school-labels-hero p { margin: 0; color: var(--text-secondary); line-height: 1.75; }
+.school-labels-category-tabs { display: flex; gap: 0.6rem; overflow-x: auto; padding: 0.2rem 0 0.8rem; margin-bottom: 1rem; }
+.school-labels-category-tab {
+  flex: 0 0 auto;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 0.45rem 0.95rem;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease;
+}
+.school-labels-category-tab span { display: inline-grid; place-items: center; min-width: 1.35rem; height: 1.35rem; border-radius: 50%; background: rgba(201,168,76,0.15); color: var(--color-gold-light); font-size: 0.72rem; }
+.school-labels-category-tab:hover, .school-labels-category-tab.is-active { border-color: var(--color-gold); color: var(--text-primary); background: rgba(201,168,76,0.1); }
+.school-labels-editor-grid { display: grid; grid-template-columns: minmax(280px, 0.88fr) minmax(360px, 1.12fr); align-items: start; gap: 1rem; }
+.school-labels-designs-panel, .school-labels-live-panel {
+  min-width: 0;
+  padding: 1.15rem;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--bg-card);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+.school-labels-section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.8rem; margin-bottom: 0.95rem; }
+.school-labels-section-heading h2 { display: flex; align-items: center; gap: 0.5rem; margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 900; }
+.school-labels-section-heading p { margin: 0.2rem 0 0; color: var(--text-muted); font-size: 0.82rem; }
+.school-labels-section-heading > span { color: var(--color-gold-light); white-space: nowrap; font-weight: 700; font-size: 0.8rem; }
+.school-labels-design-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+.school-label-design-card {
+  min-width: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 11px;
+  padding: 0.45rem;
+  text-align: start;
+  background: rgba(8,13,22,0.25);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+.school-label-design-card:hover { transform: translateY(-1px); border-color: rgba(201,168,76,0.75); }
+.school-label-design-card.is-selected { border-color: var(--color-gold); background: rgba(201,168,76,0.09); box-shadow: 0 0 0 1px rgba(201,168,76,0.18); }
+.school-label-design-image-wrap { position: relative; display: block; width: 100%; aspect-ratio: 1.32 / 1; overflow: hidden; border-radius: 7px; background: #fff; }
+.school-label-design-image-wrap img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
+.school-label-design-name { display: block; margin: 0.4rem 0.15rem 0.05rem; overflow: hidden; color: var(--text-primary); font-size: 0.76rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.school-labels-live-panel .school-labels-section-heading { margin-bottom: 0.65rem; }
+.school-labels-live-panel .school-labels-section-heading h2 { color: var(--color-gold-light); }
+.school-label-preview-canvas {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 11px;
+  background: #fff;
+}
+.school-label-preview-canvas--subjects { max-width: 360px; margin-inline: auto; }
+.school-label-preview-canvas > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.school-label-preview-lines, .school-label-student-overlay {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  text-align: center;
+  line-height: 1.08;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.school-label-preview-lines { flex-direction: column; }
+.school-label-preview-line { width: 100%; max-width: 100%; flex-shrink: 0; }
+.school-label-student-overlay { flex-direction: column; }
+.school-label-student-name, .school-label-student-class { position: static; display: flex; width: 100%; flex: 1 1 50%; min-height: 0; align-items: center; justify-content: center; overflow: hidden; text-align: center; }
+.school-label-student-class { font-size: 0.78em; }
+.school-label-layout-editor { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 1rem; padding: 0.85rem; border: 1px solid var(--border-color); border-radius: 12px; background: rgba(8,13,22,0.18); }
+.school-label-layout-heading h3 { margin: 0; color: var(--text-primary); font-size: 0.98rem; font-weight: 900; }
+.school-label-layout-heading p { margin: 0.2rem 0 0; color: var(--text-muted); font-size: 0.78rem; line-height: 1.5; }
+.school-label-layout-warning { margin: 0.5rem 0; padding: 0.6rem 0.75rem; border: 1px solid #d9a147; border-radius: 8px; color: var(--text-primary); background: rgba(217,161,71,0.14); font-size: 0.8rem; line-height: 1.5; }
+.school-label-layout-mode { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.45rem; }
+.school-label-layout-mode button, .school-label-align-buttons button { min-height: 40px; border: 1px solid var(--border-color); border-radius: 9px; padding: 0.45rem 0.6rem; background: var(--bg-page); color: var(--text-secondary); font: inherit; font-size: 0.8rem; font-weight: 800; cursor: pointer; }
+.school-label-layout-mode button.is-active, .school-label-align-buttons button.is-active { border-color: var(--color-gold); background: rgba(201,168,76,0.13); color: var(--text-primary); }
+.school-label-line-controls { display: grid; gap: 0.65rem; }
+.school-label-layout-controls { min-width: 0; display: grid; gap: 0.6rem; margin: 0; padding: 0.7rem; border: 1px solid var(--border-color); border-radius: 10px; }
+.school-label-layout-controls legend { float: none; width: auto; margin: 0; padding: 0 0.25rem; color: var(--color-gold-light); font-size: 0.8rem; font-weight: 900; }
+.school-label-layout-range { display: grid; gap: 0.25rem; color: var(--text-secondary); font-size: 0.76rem; font-weight: 700; }
+.school-label-layout-range > span { display: flex; justify-content: space-between; gap: 0.5rem; }
+.school-label-layout-range b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.school-label-range-input { display: block; width: 100%; height: 24px; margin: 0; accent-color: var(--color-gold); cursor: pointer; }
+.school-label-align-control { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; color: var(--text-secondary); font-size: 0.76rem; font-weight: 700; }
+.school-label-align-buttons { display: flex; gap: 0.35rem; }
+.school-label-align-buttons button { min-height: 34px; padding: 0.35rem 0.65rem; font-size: 0.74rem; }
+.school-label-preview-meta { display: flex; align-items: center; gap: 0.4rem; min-height: 28px; margin: 0.4rem 0 0.75rem; color: var(--text-muted); font-size: 0.74rem; }
+.school-label-ink-dot { width: 11px; height: 11px; border: 1px solid rgba(0,0,0,0.25); border-radius: 50%; }
+.school-label-inputs-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+.school-label-input-field { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; color: var(--text-secondary); font-size: 0.84rem; font-weight: 800; }
+.school-label-input-field input, .school-label-input-field textarea {
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+  padding: 0.65rem 0.75rem;
+  outline: none;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 500;
+  line-height: 1.65;
+  resize: vertical;
+}
+.school-label-input-field input:focus, .school-label-input-field textarea:focus { border-color: var(--color-gold); box-shadow: 0 0 0 2px rgba(201,168,76,0.15); }
+.school-label-input-field--textarea { margin-top: 0.15rem; }
+.school-label-input-field--textarea small { align-self: flex-end; color: var(--text-muted); font-size: 0.72rem; font-weight: 500; }
+.school-labels-note { display: flex; align-items: flex-start; gap: 0.45rem; margin-top: 0.8rem; color: var(--text-muted); font-size: 0.78rem; line-height: 1.55; }
+.school-labels-note svg { flex: 0 0 auto; margin-top: 0.18rem; color: var(--color-gold); }
+.school-labels-draft-notice { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; padding: 1rem 1.15rem; border: 1px dashed rgba(201,168,76,0.55); border-radius: 13px; background: rgba(201,168,76,0.06); }
+.school-labels-draft-copy { display: flex; flex-direction: column; gap: 0.25rem; }
+.school-labels-draft-copy strong { color: var(--color-gold-light); }
+.school-labels-draft-copy span { color: var(--text-secondary); font-size: 0.82rem; line-height: 1.55; }
+.school-labels-disabled-cta { flex: 0 0 auto; border-radius: 22px !important; font-weight: 800 !important; }
+.school-labels-disabled-cta:disabled { opacity: 0.62 !important; cursor: not-allowed; }
+
+@media (max-width: 900px) {
+  .school-labels-editor-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .school-labels-preview-page { padding: 1.2rem 0 2rem; }
+  .school-labels-hero { margin-bottom: 1.1rem; }
+  .school-labels-hero p { font-size: 0.9rem; }
+  .school-labels-designs-panel, .school-labels-live-panel { padding: 0.85rem; }
+  .school-labels-live-panel { order: -1; }
+  .school-label-preview-canvas { position: sticky; top: 70px; z-index: 4; width: min(100%, calc(28vh * var(--label-aspect-ratio))); margin-inline: auto; box-shadow: 0 5px 18px rgba(0,0,0,0.23); }
+  .school-labels-design-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .school-labels-inputs-grid { grid-template-columns: 1fr; }
+  .school-label-inputs-grid { grid-template-columns: 1fr; }
+  .school-labels-draft-notice { align-items: stretch; flex-direction: column; }
+  .school-labels-disabled-cta { width: 100%; }
+}
