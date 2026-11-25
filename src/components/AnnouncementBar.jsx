@@ -1,32 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { FaStar, FaGift, FaFire, FaBolt } from 'react-icons/fa';
+import React from 'react';
+import { FaFire } from 'react-icons/fa';
 import { localizedCopy, useLanguage } from '../LanguageContext';
 
-const OFFERS = [
-  { icon: <FaFire />, english: 'New offer: Buy 100 stickers and get 55 free!', arabic: 'عروض جديدة: اشتري 100 استيكر وخد 55 مجاناً!' },
-  { icon: <FaBolt />, english: 'Biggest deal: Buy 75 stickers and get 35 free!', arabic: 'أقوى عرض: اشتري 75 استيكر وخد 35 مجاناً!' },
-  { icon: <FaGift />, english: 'Buy 50 stickers and get 20 free!', arabic: 'اشتري 50 استيكر وخد 20 مجاناً!' },
-  { icon: <FaStar />, english: 'Welcome offer: Buy 10 stickers and get 2 free!', arabic: 'عرض البداية: اشتري 10 استيكرات وخد 2 مجاناً!' },
-];
-
+// One fixed offer everywhere, matching the top promo tier:
+// buy 100 stickers, get 55 free. (Previously this bar rotated
+// between 4 different offers every 4.5s, which read as
+// contradictory offers changing on every load.)
 export default function AnnouncementBar() {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const { language } = useLanguage();
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % OFFERS.length);
-    }, 4500); // Change every 4.5 seconds
-    return () => clearInterval(timer);
-  }, []);
-
-  const offer = OFFERS[currentIndex];
 
   return (
     <div className="announcement-bar">
-      <div className="announcement-content" key={currentIndex}>
-        <span className="announcement-icon">{offer.icon}</span>
-        <span className="announcement-text">{localizedCopy(language, offer.english, offer.arabic)}</span>
+      <div className="announcement-content">
+        <span className="announcement-icon"><FaFire /></span>
+        <span className="announcement-text">
+          {localizedCopy(
+            language,
+            'New offer: Buy 100 stickers and get 55 free!',
+            'عرض جديد: اشتري 100 استيكر وخد 55 مجاناً!'
+          )}
+        </span>
       </div>
     </div>
   );

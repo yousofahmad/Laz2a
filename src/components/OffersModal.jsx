@@ -9,9 +9,12 @@ export default function OffersModal() {
   const t = (english, arabic) => localizedCopy(language, english, arabic);
 
   useEffect(() => {
+    // Show once per browser tab instead of on every page load.
+    if (window.sessionStorage.getItem('laz2a_offers_seen')) return;
     // Small delay for better UX
     const timer = setTimeout(() => {
       setShow(true);
+      window.sessionStorage.setItem('laz2a_offers_seen', '1');
     }, 1500);
     return () => clearTimeout(timer);
   }, []);
@@ -30,12 +33,12 @@ export default function OffersModal() {
           onClick={() => setShow(false)}
         />
       </Modal.Header>
-      
+
       <Modal.Body style={{ padding: '1.5rem', textAlign: 'center' }}>
         <p style={{ fontSize: '1.1rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
           {t('Choose your individual stickers and enjoy the biggest automatic discounts in your cart:', 'اختار استيكراتك الفردية واستمتع بأقوى الخصومات التلقائية في السلة:')}
         </p>
-        
+
         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <li className="offer-tier-item">🎁 {t(<>Add <strong>12</strong> stickers to your cart (pay for 10 and get <strong>2 free</strong>)</>, <>حط <strong>12</strong> استيكر في السلة (ادفع تمن 10 وخد <strong>2 مجاناً</strong>)</>)}</li>
           <li className="offer-tier-item">🎁 {t(<>Add <strong>25</strong> stickers to your cart (pay for 20 and get <strong>5 free</strong>)</>, <>حط <strong>25</strong> استيكر في السلة (ادفع تمن 20 وخد <strong>5 مجاناً</strong>)</>)}</li>
@@ -50,7 +53,7 @@ export default function OffersModal() {
           {t('* Ready-made collections have a special price and are not counted toward individual sticker offers.', '* الكوليكشنات الجاهزة ليها سعر خاص ومابتتحسبش ضمن العدد الفردي للعروض.')}
         </div>
       </Modal.Body>
-      
+
       <Modal.Footer className="cart-modal-footer" style={{ justifyContent: 'center' }}>
         <Button className="btn btn-metallic-gold px-5 fw-bold" onClick={() => setShow(false)}>
           {t("Let's start shopping!", 'يلا نبدأ تسوق!')}
