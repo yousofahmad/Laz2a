@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   FaUser, FaPhone, FaMapMarkerAlt,
   FaUniversity, FaTrain, FaStickyNote,
-  FaCheckCircle, FaShoppingCart, FaGift, FaTag
+  FaCheckCircle, FaShoppingCart, FaGift, FaTag, FaMoneyBillWave
 } from 'react-icons/fa';
 import { supabase } from '../supabaseClient';
 import { useCart } from '../CartContext';
@@ -375,7 +375,26 @@ function CheckoutPage() {
               })}
             </div>
           )}
-          
+
+          {/* Order items summary — what the customer is about to order */}
+          <div className="checkout-items-summary" style={{ marginBottom: '1.25rem' }}>
+            <strong>{localizedCopy(language, 'Your order', 'طلبك')}</strong>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0.5rem 0 0' }}>
+              {cart.map((item) => (
+                <li
+                  key={`${item.product.id}:${item.variant || ''}`}
+                  style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', padding: '0.35rem 0', borderBottom: '1px solid #222' }}
+                >
+                  <span>
+                    {localizedProductTitle(item.product, language)}
+                    {item.variant ? ` — ${item.variant}` : ''} × {item.quantity}
+                  </span>
+                  <strong>{Number(item.product.base_price ?? item.product.price ?? 10) * item.quantity} {localizedCopy(language, 'EGP', 'جنيه')}</strong>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <div className="checkout-subtitle" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
             <span>{localizedCopy(language, 'Original subtotal:', 'المجموع الأصلي:')} {subtotal} {localizedCopy(language, 'EGP', 'جنيه')}</span>
             {discountAmount > 0 && (
@@ -560,6 +579,11 @@ function CheckoutPage() {
                 disabled={loading}
               />
             </Form.Group>
+
+            <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+              <FaMoneyBillWave style={{ marginLeft: '5px' }} />
+              {localizedCopy(language, 'Payment is cash on pickup.', 'الدفع نقدًا عند الاستلام.')}
+            </p>
 
             <Button
               type="submit"

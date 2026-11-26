@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './footer.css';
 
 import { CartProvider } from './CartContext';
 import { LanguageProvider, useLanguage } from './LanguageContext';
@@ -10,6 +11,7 @@ import AnnouncementBar from './components/AnnouncementBar';
 import CartModal from './components/CartModal';
 import ScrollToTop from './components/ScrollToTop';
 import OffersModal from './components/OffersModal';
+import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import FeedbackPage from './pages/FeedbackPage';
 import ProductPage from './pages/ProductPage';
@@ -17,6 +19,8 @@ import CheckoutPage from './pages/CheckoutPage';
 import AdminPage from './pages/AdminPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import SchoolLabelsPreviewPage from './pages/SchoolLabelsPreviewPage';
+import CollectionsPage from './pages/CollectionsPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function AppShell() {
   const { language } = useLanguage();
@@ -52,9 +56,12 @@ function AppShell() {
         <Route path="/labels-preview" element={<SchoolLabelsPreviewPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/feedback" element={<FeedbackPage />} />
+        <Route path="/collections" element={<CollectionsPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/reset-password" element={<ResetPasswordPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      {!isAdminRoute && <Footer />}
       </div>
     </CartProvider>
   );

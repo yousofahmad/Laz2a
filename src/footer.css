@@ -1,0 +1,93 @@
+/* ── Footer (append to src/index.css) ─────────────────────────────── */
+.site-footer {
+  margin-top: 3rem;
+  border-top: 1px solid var(--color-gold, #d4af37);
+  background: #111;
+  color: var(--text-secondary, #ccc);
+}
+.site-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1rem 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+}
+.site-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.site-footer-col a {
+  color: var(--text-secondary, #ccc);
+  text-decoration: none;
+}
+.site-footer-col a:hover {
+  color: var(--color-gold, #d4af37);
+}
+.site-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.site-footer-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+.site-footer-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-gold, #d4af37);
+}
+.site-footer-tagline {
+  color: var(--text-muted, #999);
+  font-size: 0.9rem;
+}
+.site-footer-heading {
+  font-size: 1.05rem;
+  font-weight: bold;
+  color: var(--color-gold, #d4af37);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+.site-footer-note {
+  color: var(--text-muted, #999);
+  font-size: 0.85rem;
+}
+.site-footer-bottom {
+  border-top: 1px solid #222;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted, #999);
+}
+
+/* ── Announcement bar: keep long offer text on one clean line ─────── */
+.announcement-bar {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.announcement-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 576px) {
+  .announcement-text {
+    font-size: 0.85rem;
+  }
+}
+
+/* ── Hero logo: stop it being clipped by the fixed header ─────────── */
+.hero-logo-wrap {
+  overflow: visible;
+}
+.hero-logo {
+  max-width: 150px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
